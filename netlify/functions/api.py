@@ -9,14 +9,15 @@ if BASE_DIR not in sys.path:
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'foodhub.settings')
 
 try:
-    import serverless_wsgi
-    from foodhub.wsgi import application
+    import django
+    django.setup()
+    from django.core.management import call_command
+    call_command('migrate', interactive=False)
+except Exception:
+    pass
 
-    def handler(event, context):
-        return serverless_wsgi.handle_request(application, event, context)
-except Exception as e:
-    def handler(event, context):
-        return {
-            "statusCode": 500,
-            "body": f"Netlify Serverless Function Error: {str(e)}"
-        }
+import serverless_wsgi
+from foodhub.wsgi import application
+
+def handler(event, context):
+    return serverless_wsgi.handle_request(application, event, context)

@@ -112,12 +112,16 @@ else:
             }
         }
     elif db_engine == 'django.db.backends.sqlite3':
+        db_path = BASE_DIR / 'db.sqlite3'
+        if not db_path.exists() and os.path.exists('/tmp'):
+            db_path = Path('/tmp') / 'db.sqlite3'
         DATABASES = {
             'default': {
                 'ENGINE': 'django.db.backends.sqlite3',
-                'NAME': BASE_DIR / 'db.sqlite3',
+                'NAME': db_path,
             }
         }
+
     else:
         DATABASES = {
             'default': {
