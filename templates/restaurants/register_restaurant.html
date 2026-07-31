@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+
+{% block title %}Register Restaurant - FoodHub{% endblock %}
+
+{% block content %}
+<div style="max-width: 700px; margin: 2rem auto;" class="card">
+    <div style="text-align: center; margin-bottom: 2rem;">
+        <div style="width: 60px; height: 60px; background: var(--primary-light); color: var(--primary-color); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; margin: 0 auto 1rem;">
+            <i class="fa-solid fa-store"></i>
+        </div>
+        <h1 style="font-size: 1.8rem;">Partner With FoodHub</h1>
+        <p style="color: var(--text-muted); font-size: 0.95rem;">Register your restaurant and reach thousands of hungry customers!</p>
+    </div>
+
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <div class="form-group">
+            <label>Restaurant Name *</label>
+            {{ form.restaurant_name }}
+        </div>
+
+        <div class="form-group">
+            <label>Description *</label>
+            {{ form.description }}
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <div class="form-group">
+                <label>Contact Phone *</label>
+                {{ form.phone }}
+            </div>
+            <div class="form-group">
+                <label>Contact Email *</label>
+                {{ form.email }}
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Complete Address *</label>
+            {{ form.address }}
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem;">
+            <div class="form-group">
+                <label>City *</label>
+                {{ form.city }}
+            </div>
+            <div class="form-group">
+                <label>State *</label>
+                {{ form.state }}
+            </div>
+            <div class="form-group">
+                <label>Pincode *</label>
+                {{ form.pincode }}
+            </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <div class="form-group">
+                <label>Cuisine Type *</label>
+                {{ form.cuisine }}
+            </div>
+            <div class="form-group">
+                <label>Delivery Time (Minutes) *</label>
+                {{ form.delivery_time }}
+            </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <div class="form-group">
+                <label>Opening Time *</label>
+                {{ form.opening_time }}
+            </div>
+            <div class="form-group">
+                <label>Closing Time *</label>
+                {{ form.closing_time }}
+            </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <div class="form-group">
+                <label>Minimum Order (₹)</label>
+                {{ form.minimum_order }}
+            </div>
+            <div class="form-group">
+                <label>GST Number (Optional)</label>
+                {{ form.gst_number }}
+            </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <div class="form-group">
+                <label>Logo Image</label>
+                {{ form.logo }}
+            </div>
+            <div class="form-group">
+                <label>Cover Banner Image</label>
+                {{ form.cover_image }}
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block" style="padding: 0.9rem; margin-top: 1rem;">
+            <i class="fa-solid fa-paper-plane"></i> Submit Registration
+        </button>
+    </form>
+</div>
+{% endblock %}

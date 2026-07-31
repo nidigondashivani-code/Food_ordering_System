@@ -1,0 +1,414 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}FoodHub - Order Food Online From Best Restaurants{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Hero Carousel Slideshow Styles */
+    .slideshow-container {
+        position: relative;
+        max-width: 100%;
+        margin-bottom: 3rem;
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+        box-shadow: var(--shadow-md);
+    }
+
+    .slide-item {
+        display: none;
+        padding: 3.5rem 2.5rem;
+        color: white;
+        background-size: cover;
+        background-position: center;
+        min-height: 320px;
+        align-items: center;
+        justify-content: space-between;
+        position: relative;
+    }
+
+    .slide-item.active {
+        display: flex;
+        animation: fadeEffect 0.8s ease-in-out;
+    }
+
+    @keyframes fadeEffect {
+        from { opacity: 0.3; transform: scale(0.99); }
+        to { opacity: 1; transform: scale(1); }
+    }
+
+    .slide-content {
+        max-width: 600px;
+        z-index: 2;
+    }
+
+    .slide-content h1 {
+        font-size: 2.3rem;
+        color: white;
+        margin-bottom: 0.6rem;
+        line-height: 1.2;
+    }
+
+    .slide-content p {
+        font-size: 1.1rem;
+        color: #e2e8f0;
+        margin-bottom: 1.5rem;
+    }
+
+    /* Carousel Prev/Next Controls */
+    .prev-slide, .next-slide {
+        cursor: pointer;
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        padding: 0.8rem 1.1rem;
+        color: white;
+        font-weight: bold;
+        font-size: 1.2rem;
+        transition: 0.3s ease;
+        border-radius: 50%;
+        background: rgba(0, 0, 0, 0.4);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        user-select: none;
+        z-index: 3;
+    }
+
+    .next-slide { right: 20px; }
+    .prev-slide { left: 20px; }
+
+    .prev-slide:hover, .next-slide:hover {
+        background: var(--primary-color);
+    }
+
+    /* Indicator Dots */
+    .dots-container {
+        text-align: center;
+        position: absolute;
+        bottom: 15px;
+        width: 100%;
+        z-index: 3;
+    }
+
+    .dot {
+        cursor: pointer;
+        height: 10px;
+        width: 10px;
+        margin: 0 4px;
+        background-color: rgba(255, 255, 255, 0.5);
+        border-radius: 50%;
+        display: inline-block;
+        transition: background-color 0.4s ease, width 0.3s ease;
+    }
+
+    .dot.active-dot, .dot:hover {
+        background-color: var(--primary-color);
+        width: 24px;
+        border-radius: 10px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Interactive Hero Slideshow Banner -->
+<div class="slideshow-container">
+    
+    <!-- Slide 1: General Hero Search -->
+    <div class="slide-item active" style="background: linear-gradient(135deg, rgba(30,39,46,0.9), rgba(47,54,64,0.95)), url('https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1200&q=80'); background-size: cover;">
+        <div class="slide-content">
+            <span style="background: var(--primary-color); color: white; padding: 0.25rem 0.75rem; border-radius: var(--radius-full); font-weight: 700; font-size: 0.85rem; text-transform: uppercase;">🚀 Fast Delivery</span>
+            <h1 style="margin-top: 0.5rem;">Hungry? Delicious Food Delivered To Your Doorstep!</h1>
+            <p>Discover top-rated restaurants, mouthwatering dishes, and lightning-fast delivery near you.</p>
+
+            <form action="{% url 'restaurant_list' %}" method="GET" class="search-box" style="display: flex; gap: 0.5rem; max-width: 520px;">
+                <input type="text" name="search" placeholder="Search restaurants, cuisines, or dishes..." class="form-control" style="border-radius: var(--radius-full); padding: 0.75rem 1.25rem;">
+                <button type="submit" class="btn btn-primary" style="border-radius: var(--radius-full); padding: 0.75rem 1.5rem; white-space: nowrap;">
+                    <i class="fa-solid fa-magnifying-glass"></i> Search
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Slide 2: Promo Discount Coupon -->
+    <div class="slide-item" style="background: linear-gradient(135deg, rgba(217,72,15,0.92), rgba(230,126,34,0.95)), url('https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=1200&q=80'); background-size: cover;">
+        <div class="slide-content">
+            <span style="background: #fff3bf; color: #d9480f; padding: 0.25rem 0.75rem; border-radius: var(--radius-full); font-weight: 800; font-size: 0.85rem;">🎉 SPECIAL OFFER</span>
+            <h1 style="margin-top: 0.5rem;">Flat 50% OFF On Your First Food Order!</h1>
+            <p>Click below to automatically apply promo coupon <strong style="color: #fff3bf; text-decoration: underline;">WELCOME50</strong> to your order.</p>
+            <a href="{% url 'apply_coupon' %}?coupon_code=WELCOME50" class="btn btn-secondary" style="border-radius: var(--radius-full); background: white; color: #d9480f; font-weight: 800; padding: 0.75rem 1.5rem;">
+                Apply WELCOME50 Coupon Now <i class="fa-solid fa-bolt"></i>
+            </a>
+        </div>
+    </div>
+
+    <!-- Slide 3: Health & Fitness Mode -->
+    <div class="slide-item" style="background: linear-gradient(135deg, rgba(17,153,142,0.9), rgba(56,239,125,0.95)), url('https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=1200&q=80'); background-size: cover;">
+        <div class="slide-content">
+            <span style="background: rgba(255,255,255,0.25); color: white; padding: 0.25rem 0.75rem; border-radius: var(--radius-full); font-weight: 800; font-size: 0.85rem;">🥗 FITNESS PORTAL</span>
+            <h1 style="margin-top: 0.5rem;">Health Mode: Nutrient-Dense & Protein Meals</h1>
+            <p>Track your calories, protein, carbs, and fat with our specialized Health & Fitness Portal.</p>
+            <a href="{% url 'healthy_menu' %}" class="btn btn-primary" style="border-radius: var(--radius-full); background: #11998e; border: none; padding: 0.75rem 1.5rem; font-weight: 700;">
+                Explore Health Mode <i class="fa-solid fa-heart-pulse"></i>
+            </a>
+        </div>
+    </div>
+
+    <!-- Navigation Arrows -->
+    <a class="prev-slide" onclick="changeSlide(-1)">❮</a>
+    <a class="next-slide" onclick="changeSlide(1)">❯</a>
+
+    <!-- Dots -->
+    <div class="dots-container">
+        <span class="dot active-dot" onclick="currentSlide(1)"></span>
+        <span class="dot" onclick="currentSlide(2)"></span>
+        <span class="dot" onclick="currentSlide(3)"></span>
+    </div>
+</div>
+
+<!-- Active Offers / 1-Click Promo Coupons Bar -->
+{% if active_coupons %}
+<div style="margin-bottom: 3rem;">
+    <h3 style="margin-bottom: 1rem;"><i class="fa-solid fa-tags" style="color: var(--secondary-color);"></i> Active Deals & Coupons (Click to Apply)</h3>
+    <div style="display: flex; gap: 1rem; overflow-x: auto; padding-bottom: 0.5rem;">
+        {% for coupon in active_coupons %}
+        <a href="{% url 'apply_coupon' %}?coupon_code={{ coupon.code }}" style="text-decoration: none; display: block; background: linear-gradient(135deg, #fff3bf, #ffe066); padding: 1rem 1.5rem; border-radius: var(--radius-md); min-width: 260px; border: 1px dashed #f59f00; transition: transform 0.2s ease;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-weight: 800; font-size: 1.1rem; color: #d9480f; text-transform: uppercase;">{{ coupon.code }}</span>
+                <span style="font-size: 0.75rem; background: #d9480f; color: white; padding: 0.2rem 0.5rem; border-radius: 4px; font-weight: 700;">1-CLICK APPLY</span>
+            </div>
+            <p style="font-size: 0.85rem; color: #495057; margin-top: 0.3rem;">Get {{ coupon.discount_percent }}% OFF up to ₹{{ coupon.max_discount|floatformat:0 }}</p>
+            <small style="color: #868e96;">Min order: ₹{{ coupon.min_order_amount|floatformat:0 }}</small>
+        </a>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+<!-- 🤖 AI Smart Dish Recommender Banner -->
+<section style="background: linear-gradient(135deg, #1e272e, #2f3640); color: white; padding: 2rem; border-radius: var(--radius-lg); margin-bottom: 3.5rem;">
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem;">
+        <div>
+            <h2 style="color: white; font-size: 1.6rem; margin-bottom: 0.3rem;"><i class="fa-solid fa-robot" style="color: var(--secondary-color);"></i> AI Smart Food Assistant</h2>
+            <p style="color: #cbd5e1; font-size: 0.95rem;">Select your current craving or mood for personalized AI dish recommendations:</p>
+        </div>
+        <span style="background: rgba(255,255,255,0.1); color: var(--secondary-color); font-weight: 700; padding: 0.35rem 0.85rem; border-radius: var(--radius-full); font-size: 0.85rem;">
+            🤖 AI Engine Active
+        </span>
+    </div>
+
+    <!-- AI Mood Filter Chips -->
+    <div style="display: flex; gap: 0.75rem; flex-wrap: wrap; margin-bottom: 1.5rem;">
+        <a href="{% url 'menu' %}?category=Biryani %26 Starters" class="btn btn-secondary btn-sm" style="background: rgba(255,255,255,0.12); color: white; border: 1px solid rgba(255,255,255,0.2);">
+            🌶️ Spicy Biryani & Kebabs
+        </a>
+        <a href="{% url 'menu' %}?category=Pizzas %26 Italian" class="btn btn-secondary btn-sm" style="background: rgba(255,255,255,0.12); color: white; border: 1px solid rgba(255,255,255,0.2);">
+            🍕 Pizza & Garlic Bread
+        </a>
+        <a href="{% url 'menu' %}?category=Burgers %26 Fast Food" class="btn btn-secondary btn-sm" style="background: rgba(255,255,255,0.12); color: white; border: 1px solid rgba(255,255,255,0.2);">
+            🍔 Burgers & Peri Peri Fries
+        </a>
+        <a href="{% url 'healthy_menu' %}" class="btn btn-secondary btn-sm" style="background: rgba(255,255,255,0.12); color: white; border: 1px solid rgba(255,255,255,0.2);">
+            🥗 Healthy (<350 kcal)
+        </a>
+        <a href="{% url 'menu' %}?category=Desserts %26 Sweets" class="btn btn-secondary btn-sm" style="background: rgba(255,255,255,0.12); color: white; border: 1px solid rgba(255,255,255,0.2);">
+            🍨 Desserts & Shakes
+        </a>
+    </div>
+
+    <!-- AI Picked Dishes Grid -->
+    {% if popular_items %}
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1rem;">
+        {% for item in popular_items|slice:":4" %}
+        <div style="background: rgba(255,255,255,0.08); padding: 1rem; border-radius: var(--radius-md); border: 1px solid rgba(255,255,255,0.15); display: flex; flex-direction: column; justify-content: space-between;">
+            <div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem;">
+                    <span style="font-size: 0.75rem; background: var(--secondary-color); color: #1e272e; font-weight: 800; padding: 0.15rem 0.45rem; border-radius: 4px;">AI TOP PICK</span>
+                    <span style="font-size: 0.8rem; color: #cbd5e1;">🔥 {{ item.calories }} kcal</span>
+                </div>
+                <strong style="color: white; font-size: 1rem; display: block; margin-bottom: 0.3rem;">{{ item.food_name }}</strong>
+                <p style="font-size: 0.8rem; color: #a0aec0; margin-bottom: 0.75rem;">{{ item.restaurant.restaurant_name }}</p>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.5rem; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 0.5rem;">
+                <span style="font-size: 1.1rem; font-weight: 800; color: var(--secondary-color);">₹{{ item.price }}</span>
+                <form action="{% url 'add_to_cart' item.id %}" method="POST" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-primary btn-sm" style="padding: 0.3rem 0.7rem; font-size: 0.8rem;">
+                        + Add
+                    </button>
+                </form>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+</section>
+
+<!-- Categories Section -->
+{% if categories %}
+<section style="margin-bottom: 3.5rem;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+        <h2>Explore Food Categories</h2>
+        <a href="{% url 'menu' %}" style="color: var(--primary-color); font-weight: 600;">View All Menu <i class="fa-solid fa-arrow-right"></i></a>
+    </div>
+
+    <div class="grid-4">
+        {% for cat in categories %}
+        <a href="{% url 'menu' %}?category={{ cat.name }}" class="card" style="text-align: center; padding: 1.5rem 1rem;">
+            <div style="width: 60px; height: 60px; background: var(--primary-light); color: var(--primary-color); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; font-size: 1.5rem;">
+                <i class="fa-solid fa-utensils"></i>
+            </div>
+            <h3 style="font-size: 1.1rem;">{{ cat.name }}</h3>
+        </a>
+        {% endfor %}
+    </div>
+</section>
+{% endif %}
+
+<!-- Featured Restaurants Section -->
+<section style="margin-bottom: 3.5rem;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+        <h2>Top Rated Restaurants</h2>
+        <a href="{% url 'restaurant_list' %}" style="color: var(--primary-color); font-weight: 600;">Explore All <i class="fa-solid fa-arrow-right"></i></a>
+    </div>
+
+    {% if featured_restaurants %}
+    <div class="grid-3">
+        {% for rest in featured_restaurants %}
+        <div class="card" style="display: flex; flex-direction: column; padding: 0; overflow: hidden;">
+            <div style="height: 180px; background: #e2e8f0; position: relative;">
+                {% if rest.cover_image %}
+                    <img src="{{ rest.cover_image.url }}" alt="{{ rest.restaurant_name }}" style="width: 100%; height: 100%; object-fit: cover;">
+                {% else %}
+                    <div style="width: 100%; height: 100%; background: linear-gradient(135deg, #ff7675, #d63031); display: flex; align-items: center; justify-content: center; color: white; font-size: 3rem;">
+                        <i class="fa-solid fa-store"></i>
+                    </div>
+                {% endif %}
+
+                <span class="rating-badge" style="position: absolute; top: 12px; right: 12px;">
+                    <i class="fa-solid fa-star"></i> {{ rest.rating }}
+                </span>
+            </div>
+
+            <div style="padding: 1.25rem; flex: 1; display: flex; flex-direction: column; justify-content: space-between;">
+                <div>
+                    <h3 style="font-size: 1.25rem; margin-bottom: 0.4rem;">{{ rest.restaurant_name }}</h3>
+                    <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 0.75rem;">
+                        <i class="fa-solid fa-bowl-food" style="color: var(--secondary-color);"></i> {{ rest.cuisine }}
+                    </p>
+                    <p style="font-size: 0.85rem; color: #718096; margin-bottom: 1rem;">
+                        <i class="fa-solid fa-location-dot"></i> {{ rest.city }} • <i class="fa-solid fa-clock"></i> {{ rest.delivery_time }} mins
+                    </p>
+                </div>
+
+                <a href="{% url 'restaurant_detail' rest.id %}" class="btn btn-primary btn-block">
+                    View Menu & Order
+                </a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <p style="color: var(--text-muted);">No approved restaurants found. <a href="{% url 'owner_register' %}">Register your restaurant now!</a></p>
+    {% endif %}
+</section>
+
+<!-- Popular Dishes Section -->
+{% if popular_items %}
+<section>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+        <h2>Popular Dishes Right Now 🔥</h2>
+        <a href="{% url 'menu' %}" style="color: var(--primary-color); font-weight: 600;">Full Menu <i class="fa-solid fa-arrow-right"></i></a>
+    </div>
+
+    <div class="grid-4">
+        {% for item in popular_items %}
+        <div class="card" style="display: flex; flex-direction: column; justify-content: space-between; padding: 1.25rem;">
+            <div>
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.5rem;">
+                    {% if item.is_veg %}
+                        <span class="veg-badge">Veg</span>
+                    {% else %}
+                        <span class="nonveg-badge">Non-Veg</span>
+                    {% endif %}
+                    <span style="font-size: 0.8rem; background: #edf2f7; padding: 0.2rem 0.5rem; border-radius: 4px; color: #4a5568;">
+                        {{ item.category.name|default:"General" }}
+                    </span>
+                </div>
+
+                <h3 style="font-size: 1.1rem; margin-bottom: 0.3rem;">{{ item.food_name }}</h3>
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.75rem; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+                    {{ item.description }}
+                </p>
+
+                <p style="font-size: 0.8rem; color: #718096; margin-bottom: 0.75rem;">
+                    🔥 {{ item.calories }} kcal • Protein: {{ item.protein }}g
+                </p>
+            </div>
+
+            <div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.5rem;">
+                    <span style="font-size: 1.2rem; font-weight: 800; color: var(--dark-color);">₹{{ item.price }}</span>
+                    <form action="{% url 'add_to_cart' item.id %}" method="POST" style="display: inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-primary btn-sm">
+                            <i class="fa-solid fa-plus"></i> Add
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+{% endif %}
+
+<script>
+let slideIndex = 1;
+let slideInterval;
+
+function showSlides(n) {
+    let i;
+    let slides = document.getElementsByClassName("slide-item");
+    let dots = document.getElementsByClassName("dot");
+    
+    if (n > slides.length) { slideIndex = 1; }
+    if (n < 1) { slideIndex = slides.length; }
+
+    for (i = 0; i < slides.length; i++) {
+        slides[i].classList.remove("active");
+    }
+    for (i = 0; i < dots.length; i++) {
+        dots[i].classList.remove("active-dot");
+    }
+
+    slides[slideIndex - 1].classList.add("active");
+    dots[slideIndex - 1].classList.add("active-dot");
+}
+
+function changeSlide(n) {
+    resetAutoPlay();
+    showSlides(slideIndex += n);
+}
+
+function currentSlide(n) {
+    resetAutoPlay();
+    showSlides(slideIndex = n);
+}
+
+function startAutoPlay() {
+    slideInterval = setInterval(function() {
+        slideIndex++;
+        showSlides(slideIndex);
+    }, 3000);
+}
+
+function resetAutoPlay() {
+    clearInterval(slideInterval);
+    startAutoPlay();
+}
+
+document.addEventListener("DOMContentLoaded", function() {
+    showSlides(slideIndex);
+    startAutoPlay();
+});
+</script>
+{% endblock %}

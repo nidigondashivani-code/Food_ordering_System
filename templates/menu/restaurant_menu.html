@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Food Menu - FoodHub{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/menu.css' %}">
+
+<div class="menu-container">
+
+    <div class="menu-header">
+        <h2>🍽 Food Menu</h2>
+
+        {% if user.is_authenticated and user.role != 'customer' %}
+            <a href="{% url 'add_menu_item' %}" class="add-btn">
+                + Add Food Item
+            </a>
+        {% endif %}
+    </div>
+
+    <div class="search-box">
+        <form method="GET">
+            <input
+                type="text"
+                name="search"
+                placeholder="Search food items..."
+                value="{{ request.GET.search }}">
+
+            <select name="category">
+                <option value="">All Categories</option>
+                {% for category in categories %}
+                <option value="{{ category.name }}" {% if request.GET.category == category.name %}selected{% endif %}>
+                    {{ category.name }}
+                </option>
+                {% endfor %}
+            </select>
+
+            <button type="submit">
+                <i class="fa-solid fa-magnifying-glass"></i> Search
+            </button>
+        </form>
+    </div>
+
+    <div class="food-grid">
+        {% for item in menu_items %}
+        <div class="food-card">
+            {% if item.image %}
+                <img src="{{ item.image.url }}" alt="{{ item.food_name }}">
+            {% else %}
+                <img src="{% static 'images/no-image.png' %}" alt="Food Item">
+            {% endif %}
+
+            <div class="food-body">
+                <h3>{{ item.food_name }}</h3>
+                <p>{{ item.description|truncatewords:12 }}</p>
+                <h4>₹ {{ item.price }}</h4>
+
+                <div class="badges">
+                    {% if item.is_veg %}
+                        <span class="veg">🥗 Veg</span>
+                    {% else %}
+                        <span class="nonveg">🍗 Non Veg</span>
+                    {% endif %}
+
+                    {% if item.is_available %}
+                        <span class="available">Available</span>
+                    {% else %}
+                        <span class="out">Out of Stock</span>
+                    {% endif %}
+
+                    {% if item.is_popular %}
+                        <span class="popular">⭐ Popular</span>
+                    {% endif %}
+                </div>
+
+                <div style="font-size: 0.85rem; color: var(--text-muted); margin: 0.5rem 0;">
+                    <span>🔥 {{ item.calories }} Calories</span> • 
+                    <span>⏱ {{ item.preparation_time }} mins</span>
+                </div>
+
+                <!-- Role Based Actions -->
+                <div class="actions">
+                    {% if user.is_authenticated and user.role != 'customer' and user.is_superuser or item.restaurant.owner == user %}
+                        <a href="{% url 'edit_menu_item' item.id %}" class="btn btn-secondary btn-sm">
+                            ✏ Edit
+                        </a>
+                        <a href="{% url 'delete_menu_item' item.id %}" class="btn btn-danger btn-sm" onclick="return confirm('Delete this menu item?')">
+                            🗑 Delete
+                        </a>
+                    {% else %}
+                        {% if item.is_available %}
+                            <form action="{% url 'add_to_cart' item.id %}" method="POST" style="width: 100%;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-primary btn-block btn-sm" style="padding: 0.5rem; font-size: 0.9rem;">
+                                    <i class="fa-solid fa-cart-plus"></i> Add to Cart
+                                </button>
+                            </form>
+                        {% else %}
+                            <button class="btn btn-secondary btn-block btn-sm" disabled style="padding: 0.5rem; font-size: 0.9rem; opacity: 0.6;">
+                                Currently Unavailable
+                            </button>
+                        {% endif %}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="empty">
+            <h2>No Food Items Found</h2>
+            <p>Try searching with a different category or name.</p>
+        </div>
+        {% endfor %}
+    </div>
+
+</div>
+{% endblock %}

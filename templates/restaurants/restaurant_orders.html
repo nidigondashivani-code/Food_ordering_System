@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+
+{% block title %}Manage Orders - {{ restaurant.restaurant_name }}{% endblock %}
+
+{% block content %}
+<div style="max-width: 1100px; margin: 0 auto;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+        <div>
+            <h1><i class="fa-solid fa-clipboard-list" style="color: var(--primary-color);"></i> Manage Customer Orders</h1>
+            <p style="color: var(--text-muted); font-size: 0.95rem;">Restaurant: <strong>{{ restaurant.restaurant_name }}</strong></p>
+        </div>
+        <a href="{% url 'restaurant_dashboard' %}" class="btn btn-secondary btn-sm">
+            <i class="fa-solid fa-arrow-left"></i> Back to Dashboard
+        </a>
+    </div>
+
+    <!-- Filter Pills -->
+    <div style="display: flex; gap: 0.6rem; overflow-x: auto; margin-bottom: 1.5rem; padding-bottom: 0.5rem;">
+        <a href="{% url 'restaurant_orders' %}" class="btn btn-sm {% if not status_filter %}btn-primary{% else %}btn-secondary{% endif %}">All Orders</a>
+        <a href="{% url 'restaurant_orders' %}?status=Confirmed" class="btn btn-sm {% if status_filter == 'Confirmed' %}btn-primary{% else %}btn-secondary{% endif %}">Confirmed</a>
+        <a href="{% url 'restaurant_orders' %}?status=Preparing" class="btn btn-sm {% if status_filter == 'Preparing' %}btn-primary{% else %}btn-secondary{% endif %}">Preparing</a>
+        <a href="{% url 'restaurant_orders' %}?status=Ready for Pickup" class="btn btn-sm {% if status_filter == 'Ready for Pickup' %}btn-primary{% else %}btn-secondary{% endif %}">Ready</a>
+        <a href="{% url 'restaurant_orders' %}?status=Delivered" class="btn btn-sm {% if status_filter == 'Delivered' %}btn-primary{% else %}btn-secondary{% endif %}">Delivered</a>
+    </div>
+
+    <!-- Orders Table -->
+    <div class="card" style="padding: 0; overflow: hidden;">
+        <table style="width: 100%; border-collapse: collapse; text-align: left;">
+            <thead>
+                <tr style="background: #f8fafc; border-bottom: 1px solid var(--border-color); font-size: 0.85rem; color: var(--text-muted);">
+                    <th style="padding: 1rem 1.25rem;">Order Number</th>
+                    <th style="padding: 1rem 1.25rem;">Date & Time</th>
+                    <th style="padding: 1rem 1.25rem;">Customer Details</th>
+                    <th style="padding: 1rem 1.25rem;">Items</th>
+                    <th style="padding: 1rem 1.25rem;">Total</th>
+                    <th style="padding: 1rem 1.25rem;">Current Status</th>
+                    <th style="padding: 1rem 1.25rem; text-align: center;">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in orders %}
+                <tr style="border-bottom: 1px solid var(--border-color);">
+                    <td style="padding: 1rem 1.25rem; font-weight: 700;">
+                        <a href="{% url 'order_tracking' order.order_number %}" style="color: var(--primary-color);">#{{ order.order_number }}</a>
+                    </td>
+                    <td style="padding: 1rem 1.25rem; font-size: 0.85rem; color: var(--text-muted);">
+                        {{ order.created_at|date:"d M, h:i A" }}
+                    </td>
+                    <td style="padding: 1rem 1.25rem;">
+                        <strong>{{ order.customer.first_name|default:order.customer.username }}</strong>
+                        <p style="font-size: 0.8rem; color: var(--text-muted);">📞 {{ order.phone }}</p>
+                    </td>
+                    <td style="padding: 1rem 1.25rem; font-size: 0.9rem;">
+                        {% for item in order.items.all %}
+                            {{ item.quantity }}x {{ item.food_name }}{% if not forloop.last %}, {% endif %}
+                        {% endfor %}
+                    </td>
+                    <td style="padding: 1rem 1.25rem; font-weight: 700; color: var(--dark-color);">
+                        ₹{{ order.total_amount }}
+                    </td>
+                    <td style="padding: 1rem 1.25rem;">
+                        <span style="font-size: 0.8rem; font-weight: 700; padding: 0.25rem 0.6rem; border-radius: var(--radius-full);
+                            {% if order.status == 'Confirmed' %}background:#ebf8ff; color:#2c5282;
+                            {% elif order.status == 'Preparing' %}background:#fffaf0; color:#9c4221;
+                            {% elif order.status == 'Ready for Pickup' %}background:#e6fffa; color:#234e52;
+                            {% elif order.status == 'Delivered' %}background:#e6fffa; color:#27ae60;
+                            {% else %}background:#edf2f7; color:#4a5568;{% endif %}">
+                            {{ order.status }}
+                        </span>
+                    </td>
+                    <td style="padding: 1rem 1.25rem; text-align: center;">
+                        <form action="{% url 'update_order_status' order.id %}" method="POST" style="display: flex; gap: 0.4rem; justify-content: center;">
+                            {% csrf_token %}
+                            <select name="status" class="form-control" style="padding: 0.3rem 0.5rem; font-size: 0.85rem; width: auto;">
+                                <option value="Confirmed" {% if order.status == 'Confirmed' %}selected{% endif %}>Confirmed</option>
+                                <option value="Preparing" {% if order.status == 'Preparing' %}selected{% endif %}>Preparing</option>
+                                <option value="Ready for Pickup" {% if order.status == 'Ready for Pickup' %}selected{% endif %}>Ready for Pickup</option>
+                                <option value="Delivered" {% if order.status == 'Delivered' %}selected{% endif %}>Delivered</option>
+                                <option value="Cancelled" {% if order.status == 'Cancelled' %}selected{% endif %}>Cancelled</option>
+                            </select>
+                            <button type="submit" class="btn btn-secondary btn-sm" style="padding: 0.3rem 0.6rem;">Update</button>
+                        </form>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" style="padding: 3rem; text-align: center; color: var(--text-muted);">
+                        No orders matching the selected filter.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

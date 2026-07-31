@@ -1,0 +1,329 @@
+{% load i18n static %}
+<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE|default:'en' }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}FoodHub - Fast & Delicious Food Delivery{% endblock %}</title>
+    
+    <!-- Google Fonts & FontAwesome -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <style>
+        /* Top Animated Food Ticker Styles */
+        .top-animated-ticker {
+            background: linear-gradient(90deg, #0f172a, #ff385c, #10b981, #0f172a);
+            background-size: 300% 100%;
+            animation: gradientShift 8s ease infinite;
+            color: #ffffff;
+            font-size: 0.84rem;
+            font-weight: 700;
+            padding: 0.4rem 0;
+            overflow: hidden;
+            white-space: nowrap;
+            position: relative;
+            z-index: 1001;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+        }
+
+        .ticker-content {
+            display: inline-block;
+            animation: tickerMove 20s linear infinite;
+        }
+
+        .ticker-content span {
+            display: inline-block;
+            padding: 0 1.75rem;
+            letter-spacing: 0.3px;
+        }
+
+        .ticker-content span strong {
+            background: rgba(255, 255, 255, 0.25);
+            padding: 0.1rem 0.45rem;
+            border-radius: 4px;
+        }
+
+        @keyframes tickerMove {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+<!-- Top Animated Food Announcement Ticker -->
+<div class="top-animated-ticker">
+    <div class="ticker-content">
+        <span>🍕 Hot Pizza & Garlic Bread</span>
+        <span>⚡ 30-Min Superfast Food Delivery</span>
+        <span>🍔 Gourmet Burgers & Fries</span>
+        <span>🎟️ Flat 50% OFF Code: <strong>WELCOME50</strong></span>
+        <span>🥗 Smart Health & Fitness Mode</span>
+        <span>🍨 Artisan Desserts & Cold Shakes</span>
+        <span>🌶️ Spicy Dum Biryani Special</span>
+        <!-- Duplicated for continuous smooth looping -->
+        <span>🍕 Hot Pizza & Garlic Bread</span>
+        <span>⚡ 30-Min Superfast Food Delivery</span>
+        <span>🍔 Gourmet Burgers & Fries</span>
+        <span>🎟️ Flat 50% OFF Code: <strong>WELCOME50</strong></span>
+        <span>🥗 Smart Health & Fitness Mode</span>
+        <span>🍨 Artisan Desserts & Cold Shakes</span>
+        <span>🌶️ Spicy Dum Biryani Special</span>
+    </div>
+</div>
+
+<nav class="navbar">
+    <div class="logo">
+        <a href="{% url 'home' %}">
+            <i class="fa-solid fa-burger"></i> FoodHub
+        </a>
+    </div>
+
+    <!-- Mobile Hamburger Toggle Button -->
+    <button class="mobile-toggle" onclick="toggleNavMenu()" aria-label="Toggle Navigation">
+        <i class="fa-solid fa-bars" id="toggleIcon"></i>
+    </button>
+
+    <ul id="navMenu">
+        {% if user.is_authenticated %}
+            {% if user.role == 'restaurant' or user.role == 'owner' %}
+                <!-- Restaurant Owner Branch Navigation -->
+                <li><a href="{% url 'restaurant_dashboard' %}"><i class="fa-solid fa-chart-line"></i> {% trans "Owner Dashboard" %}</a></li>
+                <li><a href="{% url 'edit_restaurant' %}"><i class="fa-solid fa-store"></i> Manage Restaurant</a></li>
+                <li><a href="{% url 'restaurant_menu' %}"><i class="fa-solid fa-bars-progress"></i> Manage Menu</a></li>
+                <li><a href="{% url 'restaurant_orders' %}"><i class="fa-solid fa-clipboard-list"></i> Manage Orders</a></li>
+                <li><a href="{% url 'restaurant_reviews' %}"><i class="fa-solid fa-sack-dollar"></i> Revenue & Reviews</a></li>
+            {% elif user.role == 'delivery' %}
+                <!-- Delivery Partner Navigation -->
+                <li><a href="{% url 'delivery_dashboard' %}"><i class="fa-solid fa-motorcycle"></i> Deliveries</a></li>
+            {% else %}
+                <!-- Customer Branch Navigation -->
+                <li><a href="{% url 'home' %}"><i class="fa-solid fa-house"></i> {% trans "Customer Home" %}</a></li>
+                <li><a href="{% url 'restaurant_list' %}"><i class="fa-solid fa-utensils"></i> {% trans "Restaurants" %}</a></li>
+                <li><a href="{% url 'meal_planner' %}" style="color: #ff9f1a; font-weight: 700;"><i class="fa-solid fa-bullseye"></i> {% trans "Meal Planner" %}</a></li>
+                <li><a href="{% url 'healthy_menu' %}" style="color: #2ecc71; font-weight: 700;"><i class="fa-solid fa-heart-pulse"></i> {% trans "Health Mode" %}</a></li>
+                <li>
+                    <button onclick="startVoiceRecognition()" class="btn btn-secondary btn-sm" style="border-radius: var(--radius-full); cursor: pointer; color: var(--dark-color);">
+                        <i class="fa-solid fa-microphone" style="color: var(--primary-color);"></i> {% trans "Voice Order" %}
+                    </button>
+                </li>
+                <li><a href="{% url 'cart_detail' %}" class="nav-cart-btn">
+                    <i class="fa-solid fa-cart-shopping"></i> {% trans "Cart" %}
+                    {% if cart_count > 0 %}<span class="cart-badge">{{ cart_count }}</span>{% endif %}
+                </a></li>
+                <li><a href="{% url 'customer_orders' %}"><i class="fa-solid fa-clock-rotate-left"></i> {% trans "Orders" %}</a></li>
+            {% endif %}
+
+            {% if user.is_superuser and user.role not in 'restaurant owner' %}
+                <!-- Superuser Quick Owner Access -->
+                <li><a href="{% url 'restaurant_dashboard' %}"><i class="fa-solid fa-user-shield"></i> Admin Dashboard</a></li>
+            {% endif %}
+
+            <li><a href="{% url 'profile' %}"><i class="fa-solid fa-user-gear"></i> {% trans "Profile" %}</a></li>
+            <li><a href="{% url 'logout' %}" style="color: #e53e3e;"><i class="fa-solid fa-right-from-bracket"></i> {% trans "Logout" %}</a></li>
+
+        {% else %}
+            <!-- Unauthenticated Public Navigation -->
+            <li><a href="{% url 'home' %}"><i class="fa-solid fa-house"></i> {% trans "Home" %}</a></li>
+            <li><a href="{% url 'restaurant_list' %}"><i class="fa-solid fa-utensils"></i> {% trans "Restaurants" %}</a></li>
+            <li><a href="{% url 'meal_planner' %}" style="color: #ff9f1a; font-weight: 700;"><i class="fa-solid fa-bullseye"></i> {% trans "Meal Planner" %}</a></li>
+            <li><a href="{% url 'healthy_menu' %}" style="color: #2ecc71; font-weight: 700;"><i class="fa-solid fa-heart-pulse"></i> {% trans "Health Mode" %}</a></li>
+            <li>
+                <button onclick="startVoiceRecognition()" class="btn btn-secondary btn-sm" style="border-radius: var(--radius-full); cursor: pointer; color: var(--dark-color);">
+                    <i class="fa-solid fa-microphone" style="color: var(--primary-color);"></i> {% trans "Voice Order" %}
+                </button>
+            </li>
+            <li><a href="{% url 'cart_detail' %}" class="nav-cart-btn">
+                <i class="fa-solid fa-cart-shopping"></i> {% trans "Cart" %}
+                {% if cart_count > 0 %}<span class="cart-badge">{{ cart_count }}</span>{% endif %}
+            </a></li>
+            <li><a href="{% url 'login' %}"><i class="fa-solid fa-right-to-bracket"></i> {% trans "Login" %}</a></li>
+            <li><a href="{% url 'register' %}" class="btn btn-primary btn-sm"><i class="fa-solid fa-user-plus"></i> {% trans "Customer Register" %}</a></li>
+            <li><a href="{% url 'owner_register' %}" class="btn btn-secondary btn-sm"><i class="fa-solid fa-store"></i> {% trans "Owner Register" %}</a></li>
+        {% endif %}
+
+        <!-- Multi-language i18n Selector -->
+        <li>
+            <form action="{% url 'set_language' %}" method="post" style="display: inline-block;">
+                {% csrf_token %}
+                <input name="next" type="hidden" value="{{ request.get_full_path }}">
+                <select name="language" onchange="this.form.submit()" class="form-control" style="padding: 0.35rem 0.6rem; font-size: 0.82rem; font-weight: 700; border-radius: var(--radius-full); background: #ffffff; color: var(--dark-color); border: 1.5px solid var(--border-color); cursor: pointer;">
+                    <option value="en" {% if LANGUAGE_CODE == 'en' or LANGUAGE_CODE == 'en-us' %}selected{% endif %}>🌐 English</option>
+                    <option value="te" {% if LANGUAGE_CODE == 'te' %}selected{% endif %}>🇮🇳 తెలుగు (Telugu)</option>
+                    <option value="hi" {% if LANGUAGE_CODE == 'hi' %}selected{% endif %}>🇮🇳 हिंदी (Hindi)</option>
+                    <option value="ta" {% if LANGUAGE_CODE == 'ta' %}selected{% endif %}>🇮🇳 தமிழ் (Tamil)</option>
+                </select>
+            </form>
+        </li>
+    </ul>
+</nav>
+
+{% if messages %}
+<div class="messages-container">
+    {% for message in messages %}
+    <div class="alert alert-{{ message.tags }}">
+        <span><i class="fa-solid fa-circle-info"></i> {{ message }}</span>
+        <button onclick="this.parentElement.remove()" style="background:none; border:none; cursor:pointer; color:inherit; font-size:1.1rem;">&times;</button>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+<div class="container">
+    {% block content %}
+    {% endblock %}
+</div>
+
+<!-- 🎙️ Voice Ordering Modal Overlay -->
+<div id="voiceModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); backdrop-filter: blur(8px); z-index: 9999; justify-content: center; align-items: center;">
+    <div style="background: #ffffff; width: 90%; max-width: 480px; padding: 2.5rem 2rem; border-radius: var(--radius-lg); text-align: center; box-shadow: var(--shadow-lg); position: relative;">
+        <button onclick="closeVoiceModal()" style="position: absolute; top: 15px; right: 20px; background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-muted);">&times;</button>
+        
+        <div id="voiceIconPulse" style="width: 80px; height: 80px; background: var(--primary-light); color: var(--primary-color); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; margin: 0 auto 1.5rem; animation: pulseGlow 1.5s infinite;">
+            <i class="fa-solid fa-microphone"></i>
+        </div>
+
+        <h2 style="font-size: 1.5rem; margin-bottom: 0.5rem;" id="voiceStatusTitle">Listening...</h2>
+        <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 1.5rem;" id="voiceStatusText">
+            Speak your order (e.g. <em>"Order one chicken biryani and a Coke"</em>)
+        </p>
+
+        <div id="voiceTranscriptBox" style="background: #f8fafc; padding: 1rem; border-radius: var(--radius-md); border: 1px dashed var(--border-color); font-weight: 600; color: var(--dark-color); min-height: 50px; display: flex; align-items: center; justify-content: center; margin-bottom: 1.5rem;">
+            <em>Waiting for speech...</em>
+        </div>
+
+        <button onclick="closeVoiceModal()" class="btn btn-secondary btn-block">Cancel</button>
+    </div>
+</div>
+
+<style>
+@keyframes pulseGlow {
+    0% { box-shadow: 0 0 0 0 rgba(255, 56, 56, 0.4); }
+    70% { box-shadow: 0 0 0 20px rgba(255, 56, 56, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(255, 56, 56, 0); }
+}
+</style>
+
+<footer>
+    <div style="max-width: 1240px; margin: 0 auto; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 2rem; text-align: left; margin-bottom: 2rem;">
+        <div>
+            <h3 style="color:#ffffff; margin-bottom:0.75rem;"><i class="fa-solid fa-burger" style="color:var(--primary-color);"></i> FoodHub</h3>
+            <p style="font-size:0.9rem; max-width:300px; color:#94a3b8;">Craving delicious food? Order from top-rated restaurants with superfast delivery to your doorstep.</p>
+        </div>
+        <div>
+            <h4 style="color:#ffffff; margin-bottom:0.75rem;">Quick Links</h4>
+            <ul style="list-style:none; line-height:2;">
+                <li><a href="{% url 'restaurant_list' %}">Explore Restaurants</a></li>
+                <li><a href="{% url 'meal_planner' %}">Smart Meal Planner</a></li>
+                <li><a href="{% url 'healthy_menu' %}">Health & Fitness Mode</a></li>
+                <li><a href="{% url 'owner_register' %}">Partner With Us</a></li>
+            </ul>
+        </div>
+        <div>
+            <h4 style="color:#ffffff; margin-bottom:0.75rem;">Support</h4>
+            <p style="font-size:0.9rem; color:#94a3b8;"><i class="fa-solid fa-headset"></i> 24/7 Helpline: 1800-FOOD-HUB</p>
+            <p style="font-size:0.9rem; color:#94a3b8;"><i class="fa-solid fa-envelope"></i> support@foodhub.com</p>
+        </div>
+    </div>
+    <hr style="border: 0; border-top: 1px solid #2d3748; margin-bottom: 1.5rem;">
+    <p>© 2026 FoodHub | Premium Food Ordering System. Built with Django.</p>
+</footer>
+
+<script>
+function toggleNavMenu() {
+    const navMenu = document.getElementById("navMenu");
+    const icon = document.getElementById("toggleIcon");
+    navMenu.classList.toggle("nav-open");
+    if (navMenu.classList.contains("nav-open")) {
+        icon.className = "fa-solid fa-xmark";
+    } else {
+        icon.className = "fa-solid fa-bars";
+    }
+}
+
+let recognition;
+
+function startVoiceRecognition() {
+    const modal = document.getElementById("voiceModal");
+    const statusTitle = document.getElementById("voiceStatusTitle");
+    const statusText = document.getElementById("voiceStatusText");
+    const transcriptBox = document.getElementById("voiceTranscriptBox");
+
+    modal.style.display = "flex";
+    statusTitle.innerText = "Listening...";
+    statusText.innerText = "Speak your order (e.g. 'Order one chicken biryani')";
+    transcriptBox.innerHTML = "<em>Listening... Speak now!</em>";
+
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+    if (!SpeechRecognition) {
+        statusTitle.innerText = "Speech API Not Supported";
+        statusText.innerText = "Please use Google Chrome or MS Edge browser for Voice Ordering.";
+        return;
+    }
+
+    recognition = new SpeechRecognition();
+    recognition.lang = 'en-US';
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+
+    recognition.start();
+
+    recognition.onresult = function(event) {
+        const transcript = event.results[0][0].transcript;
+        transcriptBox.innerText = `"${transcript}"`;
+        statusTitle.innerText = "Processing Voice Order...";
+        statusText.innerText = "Matching items with restaurant menu...";
+
+        fetch("{% url 'voice_order' %}", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": "{{ csrf_token }}"
+            },
+            body: JSON.stringify({ transcript: transcript })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.status === 'success' || data.status === 'search') {
+                window.location.href = data.redirect;
+            } else {
+                statusTitle.innerText = "Could Not Match Item";
+                statusText.innerText = data.message || "Please try speaking the food item name clearly.";
+            }
+        })
+        .catch(err => {
+            statusTitle.innerText = "Error Processing Voice";
+            statusText.innerText = "Something went wrong. Please try again.";
+        });
+    };
+
+    recognition.onerror = function(event) {
+        statusTitle.innerText = "Voice Recognition Error";
+        statusText.innerText = "Error: " + event.error;
+    };
+}
+
+function closeVoiceModal() {
+    if (recognition) {
+        try { recognition.stop(); } catch(e) {}
+    }
+    document.getElementById("voiceModal").style.display = "none";
+}
+</script>
+
+{% block extra_js %}{% endblock %}
+</body>
+</html>

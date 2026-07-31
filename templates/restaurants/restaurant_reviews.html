@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block title %}Customer Reviews & Ratings - {{ restaurant.restaurant_name }}{% endblock %}
+
+{% block content %}
+<div style="max-width: 900px; margin: 0 auto;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+        <div>
+            <h1><i class="fa-solid fa-star" style="color: #f1c40f;"></i> Customer Reviews & Ratings</h1>
+            <p style="color: var(--text-muted); font-size: 0.95rem;">
+                Overall Rating: <strong style="color: var(--dark-color);">⭐ {{ restaurant.rating }} / 5.0 Stars</strong>
+            </p>
+        </div>
+        <a href="{% url 'restaurant_dashboard' %}" class="btn btn-secondary btn-sm">
+            <i class="fa-solid fa-arrow-left"></i> Back to Dashboard
+        </a>
+    </div>
+
+    {% if reviews %}
+    <div style="display: flex; flex-direction: column; gap: 1.25rem;">
+        {% for rev in reviews %}
+        <div class="card">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.5rem;">
+                <div>
+                    <strong style="font-size: 1.1rem; color: var(--dark-color);">{{ rev.user.first_name|default:rev.user.username }}</strong>
+                    <span style="font-size: 0.85rem; color: var(--text-muted); display: block;">Reviewed on {{ rev.created_at|date:"d M Y, h:i A" }}</span>
+                </div>
+                <span class="rating-badge">
+                    <i class="fa-solid fa-star"></i> {{ rev.rating }}.0
+                </span>
+            </div>
+
+            <p style="font-size: 0.95rem; color: #4a5568; line-height: 1.5; margin-top: 0.5rem;">
+                "{{ rev.comment }}"
+            </p>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="card" style="text-align: center; padding: 4rem 2rem;">
+        <i class="fa-solid fa-comments" style="font-size: 3.5rem; color: #cbd5e1; margin-bottom: 1rem;"></i>
+        <h2>No Reviews Yet</h2>
+        <p style="color: var(--text-muted);">Customer ratings and reviews will appear here once orders are delivered.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

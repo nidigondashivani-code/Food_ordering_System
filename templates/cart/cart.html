@@ -1,0 +1,191 @@
+{% extends 'base.html' %}
+
+{% block title %}Your Shopping Cart - FoodHub{% endblock %}
+
+{% block content %}
+<div style="max-width: 1050px; margin: 0 auto;">
+    <h1 style="margin-bottom: 1.5rem;"><i class="fa-solid fa-cart-shopping" style="color: var(--primary-color);"></i> Your Shopping Cart</h1>
+
+    {% if cart and cart.items.all %}
+    <div style="display: grid; grid-template-columns: 1fr 340px; gap: 2rem; align-items: start;">
+        <!-- Cart Items List -->
+        <div>
+            {% if cart_restaurant %}
+            <div style="background: #edf2f7; padding: 1rem 1.25rem; border-radius: var(--radius-md); margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: space-between;">
+                <div>
+                    <span style="font-size: 0.85rem; color: #718096; text-transform: uppercase; font-weight: 700;">Ordering From:</span>
+                    <h3 style="font-size: 1.1rem; color: var(--dark-color);">{{ cart_restaurant.restaurant_name }}</h3>
+                </div>
+                <a href="{% url 'restaurant_detail' cart_restaurant.id %}" class="btn btn-secondary btn-sm">Add More Items</a>
+            </div>
+            {% endif %}
+
+            <div class="card" style="padding: 0; overflow: hidden; margin-bottom: 1.5rem;">
+                <table style="width: 100%; border-collapse: collapse; text-align: left;">
+                    <thead>
+                        <tr style="background: #f8fafc; border-bottom: 1px solid var(--border-color); font-size: 0.9rem; color: var(--text-muted);">
+                            <th style="padding: 1rem 1.25rem;">Item</th>
+                            <th style="padding: 1rem 1.25rem;">Price</th>
+                            <th style="padding: 1rem 1.25rem; text-align: center;">Quantity</th>
+                            <th style="padding: 1rem 1.25rem; text-align: right;">Total</th>
+                            <th style="padding: 1rem 1.25rem; text-align: center;">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in cart.items.all %}
+                        <tr style="border-bottom: 1px solid var(--border-color);">
+                            <td style="padding: 1.25rem;">
+                                <div style="display: flex; align-items: center; gap: 0.75rem;">
+                                    {% if item.menu_item.is_veg %}
+                                        <span class="veg-badge">Veg</span>
+                                    {% else %}
+                                        <span class="nonveg-badge">Non-Veg</span>
+                                    {% endif %}
+                                    <div>
+                                        <strong style="font-size: 1rem; color: var(--dark-color);">{{ item.menu_item.food_name }}</strong>
+                                        {% if item.special_instructions %}
+                                            <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.2rem;">Note: {{ item.special_instructions }}</p>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </td>
+                            <td style="padding: 1.25rem;">₹{{ item.menu_item.price }}</td>
+                            <td style="padding: 1.25rem; text-align: center;">
+                                <div style="display: inline-flex; align-items: center; border: 1px solid var(--border-color); border-radius: var(--radius-sm); overflow: hidden;">
+                                    <form action="{% url 'update_cart_item' item.id %}" method="POST" style="display: inline;">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="action" value="decrease">
+                                        <button type="submit" style="padding: 0.3rem 0.6rem; border: none; background: #edf2f7; cursor: pointer; font-weight: bold;">-</button>
+                                    </form>
+                                    <span style="padding: 0.3rem 0.75rem; font-weight: 700;">{{ item.quantity }}</span>
+                                    <form action="{% url 'update_cart_item' item.id %}" method="POST" style="display: inline;">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="action" value="increase">
+                                        <button type="submit" style="padding: 0.3rem 0.6rem; border: none; background: #edf2f7; cursor: pointer; font-weight: bold;">+</button>
+                                    </form>
+                                </div>
+                            </td>
+                            <td style="padding: 1.25rem; text-align: right; font-weight: 700; color: var(--dark-color);">
+                                ₹{{ item.get_cost }}
+                            </td>
+                            <td style="padding: 1.25rem; text-align: center;">
+                                <a href="{% url 'remove_cart_item' item.id %}" style="color: #e53e3e; font-size: 1rem;" title="Remove Item">
+                                    <i class="fa-solid fa-trash-can"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- AI Smart Food Pairings Section -->
+            {% if ai_recommendations %}
+            <div style="background: linear-gradient(135deg, #1e272e, #2d3436); color: white; padding: 1.5rem; border-radius: var(--radius-md); margin-bottom: 1.5rem;">
+                <h3 style="color: #ffffff; font-size: 1.15rem; margin-bottom: 0.4rem; display: flex; align-items: center; gap: 0.5rem;">
+                    <i class="fa-solid fa-robot" style="color: var(--secondary-color);"></i> AI Smart Food Pairings
+                </h3>
+                <p style="font-size: 0.85rem; color: #cbd5e1; margin-bottom: 1rem;">Dishes that pair perfectly with your current meal choices:</p>
+
+                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 1rem;">
+                    {% for rec in ai_recommendations %}
+                    <div style="background: rgba(255,255,255,0.08); padding: 0.85rem; border-radius: var(--radius-sm); border: 1px solid rgba(255,255,255,0.15); display: flex; flex-direction: column; justify-content: space-between;">
+                        <div>
+                            <strong style="color: #ffffff; font-size: 0.95rem; display: block;">{{ rec.food_name }}</strong>
+                            <span style="color: var(--secondary-color); font-weight: 700; font-size: 0.85rem;">₹{{ rec.price }}</span>
+                        </div>
+                        <form action="{% url 'add_to_cart' rec.id %}" method="POST" style="margin-top: 0.75rem;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-primary btn-sm btn-block" style="padding: 0.35rem; font-size: 0.8rem;">
+                                + Add Pairing
+                            </button>
+                        </form>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <a href="{% url 'clear_cart' %}" class="btn btn-secondary btn-sm" onclick="return confirm('Clear entire cart?')">
+                    <i class="fa-solid fa-trash"></i> Clear Cart
+                </a>
+                <a href="{% url 'restaurant_list' %}" style="color: var(--primary-color); font-weight: 600;">
+                    <i class="fa-solid fa-arrow-left"></i> Continue Shopping
+                </a>
+            </div>
+        </div>
+
+        <!-- Order Summary & Checkout Sidebar -->
+        <div class="card" style="position: sticky; top: 90px;">
+            <h3 style="margin-bottom: 1.25rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--border-color);">Order Summary</h3>
+
+            <!-- Promo Code Section -->
+            <div style="margin-bottom: 1.5rem;">
+                <label style="font-size: 0.85rem; font-weight: 600; color: #4a5568; margin-bottom: 0.4rem; display: block;">Apply Promo Coupon</label>
+                {% if coupon_code %}
+                <div style="background: #e6fffa; border: 1px solid #b2f5ea; padding: 0.6rem 0.85rem; border-radius: var(--radius-sm); display: flex; justify-content: space-between; align-items: center;">
+                    <span style="font-weight: 700; color: #234e52;"><i class="fa-solid fa-ticket"></i> {{ coupon_code }} Applied</span>
+                    <a href="{% url 'remove_coupon' %}" style="color: #e53e3e; font-size: 0.85rem; font-weight: 600;">Remove</a>
+                </div>
+                {% else %}
+                <form action="{% url 'apply_coupon' %}" method="POST" style="display: flex; gap: 0.5rem;">
+                    {% csrf_token %}
+                    <input type="text" name="coupon_code" class="form-control" placeholder="Code (e.g. WELCOME50)" required style="padding: 0.5rem 0.75rem; font-size: 0.9rem;">
+                    <button type="submit" class="btn btn-secondary btn-sm">Apply</button>
+                </form>
+                {% endif %}
+            </div>
+
+            <!-- Price Breakdown -->
+            <div style="font-size: 0.95rem; display: flex; flex-direction: column; gap: 0.75rem; margin-bottom: 1.5rem;">
+                <div style="display: flex; justify-content: space-between; color: var(--text-muted);">
+                    <span>Item Subtotal</span>
+                    <span>₹{{ subtotal }}</span>
+                </div>
+
+                <div style="display: flex; justify-content: space-between; color: var(--text-muted);">
+                    <span>Delivery Fee</span>
+                    <span>₹{{ delivery_fee }}</span>
+                </div>
+
+                <div style="display: flex; justify-content: space-between; color: var(--text-muted);">
+                    <span>Taxes & Charges (5%)</span>
+                    <span>₹{{ tax }}</span>
+                </div>
+
+                {% if discount > 0 %}
+                <div style="display: flex; justify-content: space-between; color: #27ae60; font-weight: 600;">
+                    <span>Discount</span>
+                    <span>-₹{{ discount }}</span>
+                </div>
+                {% endif %}
+
+                <hr style="border: 0; border-top: 1px dashed var(--border-color); margin: 0.25rem 0;">
+
+                <div style="display: flex; justify-content: space-between; font-size: 1.25rem; font-weight: 800; color: var(--dark-color);">
+                    <span>Grand Total</span>
+                    <span style="color: var(--primary-color);">₹{{ total }}</span>
+                </div>
+            </div>
+
+            <a href="{% url 'checkout' %}" class="btn btn-primary btn-block" style="padding: 0.9rem;">
+                Proceed to Checkout <i class="fa-solid fa-arrow-right"></i>
+            </a>
+        </div>
+    </div>
+    {% else %}
+    <!-- Empty Cart State -->
+    <div class="card" style="text-align: center; padding: 4rem 2rem; max-width: 600px; margin: 2rem auto;">
+        <div style="font-size: 4rem; color: #cbd5e1; margin-bottom: 1rem;">
+            <i class="fa-solid fa-basket-shopping"></i>
+        </div>
+        <h2 style="margin-bottom: 0.5rem;">Your Cart is Empty</h2>
+        <p style="color: var(--text-muted); margin-bottom: 2rem;">Looks like you haven't added any delicious food items to your cart yet.</p>
+        <a href="{% url 'restaurant_list' %}" class="btn btn-primary">
+            <i class="fa-solid fa-utensils"></i> Browse Restaurants
+        </a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

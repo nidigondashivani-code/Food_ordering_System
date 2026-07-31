@@ -1,0 +1,228 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Smart Meal Planner - FoodHub{% endblock %}
+
+{% block content %}
+<div style="max-width: 1100px; margin: 0 auto;">
+    
+    <!-- Top Header Banner -->
+    <div style="background: linear-gradient(135deg, #1e272e, #0f172a); color: white; padding: 2.5rem 2rem; border-radius: var(--radius-lg); margin-bottom: 2rem; box-shadow: var(--shadow-md);">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1.5rem;">
+            <div>
+                <span style="background: var(--secondary-color); color: #1e272e; font-size: 0.85rem; font-weight: 800; padding: 0.3rem 0.85rem; border-radius: var(--radius-full); text-transform: uppercase;">
+                    🎯 AI Fitness & Nutrition Planner
+                </span>
+                <h1 style="color: white; font-size: 2.2rem; margin: 0.5rem 0 0.3rem;"><i class="fa-solid fa-calculator"></i> Smart Meal Planner</h1>
+                <p style="color: #cbd5e1; font-size: 1rem; max-width: 600px;">
+                    Set your daily calorie budget, protein targets, and fitness goals to auto-generate personalized meal plans.
+                </p>
+            </div>
+            <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                <div style="background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); padding: 1rem 1.25rem; border-radius: var(--radius-md); text-align: center; border: 1px solid rgba(255,255,255,0.2);">
+                    <div style="font-size: 1.5rem; font-weight: 800; color: var(--secondary-color);">{{ total_plan_calories }} / {{ calorie_goal }}</div>
+                    <small style="color: #cbd5e1;">Calories (kcal)</small>
+                </div>
+                <div style="background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); padding: 1rem 1.25rem; border-radius: var(--radius-md); text-align: center; border: 1px solid rgba(255,255,255,0.2);">
+                    <div style="font-size: 1.5rem; font-weight: 800; color: #2ecc71;">{{ total_plan_protein }}g / {{ protein_target }}g</div>
+                    <small style="color: #cbd5e1;">Protein Target</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Goal Setting Form Card -->
+    <div class="card" style="margin-bottom: 2.5rem; background: #ffffff; border: 1px solid var(--border-color);">
+        <h2 style="font-size: 1.3rem; margin-bottom: 1.25rem; display: flex; align-items: center; gap: 0.5rem;">
+            <i class="fa-solid fa-sliders" style="color: var(--primary-color);"></i> Customize Your Daily Fitness Goals
+        </h2>
+
+        <form method="POST" action="{% url 'meal_planner' %}" style="display: grid; grid-template-columns: 1fr 1fr 1fr auto; gap: 1.25rem; align-items: end;">
+            {% csrf_token %}
+
+            <div class="form-group" style="margin-bottom: 0;">
+                <label for="calorie_goal">🎯 Daily Calorie Goal (kcal)</label>
+                <input type="number" id="calorie_goal" name="calorie_goal" class="form-control" value="{{ calorie_goal }}" min="1000" max="5000" step="50" required>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 0;">
+                <label for="fitness_goal">🏋️ Fitness Goal</label>
+                <select id="fitness_goal" name="fitness_goal" class="form-control">
+                    <option value="weight_loss" {% if fitness_goal == 'weight_loss' %}selected{% endif %}>🔥 Weight Loss (Calorie Deficit)</option>
+                    <option value="maintenance" {% if fitness_goal == 'maintenance' %}selected{% endif %}>⚖️ Maintain Weight & Balance</option>
+                    <option value="weight_gain" {% if fitness_goal == 'weight_gain' %}selected{% endif %}>💪 Weight Gain & Muscle Mass</option>
+                </select>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 0;">
+                <label for="protein_target">💪 Daily Protein Target (g)</label>
+                <input type="number" id="protein_target" name="protein_target" class="form-control" value="{{ protein_target }}" min="30" max="250" step="5" required>
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="padding: 0.8rem 1.5rem; white-space: nowrap;">
+                <i class="fa-solid fa-arrows-rotate"></i> Update Plan
+            </button>
+        </form>
+    </div>
+
+    <!-- Generated Daily Meal Plan Grid -->
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+        <h2>Suggested Daily Meal Combinations</h2>
+        <span style="font-size: 0.95rem; font-weight: 700; color: var(--dark-color);">
+            Full Day Total: <span style="color: var(--primary-color);">₹{{ total_plan_price }}</span>
+        </span>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1.5rem; margin-bottom: 3rem;">
+        
+        <!-- Breakfast Meal -->
+        <div class="card" style="border-top: 4px solid #f39c12; display: flex; flex-direction: column; justify-content: space-between;">
+            <div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+                    <span style="font-weight: 800; color: #d35400; font-size: 0.9rem;"><i class="fa-solid fa-sun"></i> 🌅 BREAKFAST</span>
+                </div>
+
+                {% with item=breakfast_items.first %}
+                {% if item %}
+                <h3 style="font-size: 1.15rem; margin-bottom: 0.4rem;">{{ item.food_name }}</h3>
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">From {{ item.restaurant.restaurant_name }}</p>
+
+                <div style="background: #fffaf0; padding: 0.65rem; border-radius: var(--radius-sm); border: 1px solid #fbd38d; margin-bottom: 1rem; font-size: 0.85rem;">
+                    <div style="display: flex; justify-content: space-between; font-weight: 700; color: #9c4221;">
+                        <span>🔥 {{ item.calories }} kcal</span>
+                        <span>💪 {{ item.protein }}g Protein</span>
+                    </div>
+                </div>
+                {% else %}
+                <p style="color: var(--text-muted);">No breakfast item match found.</p>
+                {% endif %}
+                {% endwith %}
+            </div>
+
+            {% with item=breakfast_items.first %}
+            {% if item %}
+            <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-color); padding-top: 0.75rem;">
+                <span style="font-weight: 800; font-size: 1.15rem; color: var(--dark-color);">₹{{ item.price }}</span>
+                <form action="{% url 'add_to_cart' item.id %}" method="POST">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-primary btn-sm">+ Add Meal</button>
+                </form>
+            </div>
+            {% endif %}
+            {% endwith %}
+        </div>
+
+        <!-- Lunch Meal -->
+        <div class="card" style="border-top: 4px solid #3498db; display: flex; flex-direction: column; justify-content: space-between;">
+            <div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+                    <span style="font-weight: 800; color: #2980b9; font-size: 0.9rem;"><i class="fa-solid fa-utensils"></i> ☀️ LUNCH</span>
+                </div>
+
+                {% with item=lunch_items.first %}
+                {% if item %}
+                <h3 style="font-size: 1.15rem; margin-bottom: 0.4rem;">{{ item.food_name }}</h3>
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">From {{ item.restaurant.restaurant_name }}</p>
+
+                <div style="background: #ebf8ff; padding: 0.65rem; border-radius: var(--radius-sm); border: 1px solid #bee3f8; margin-bottom: 1rem; font-size: 0.85rem;">
+                    <div style="display: flex; justify-content: space-between; font-weight: 700; color: #2c5282;">
+                        <span>🔥 {{ item.calories }} kcal</span>
+                        <span>💪 {{ item.protein }}g Protein</span>
+                    </div>
+                </div>
+                {% else %}
+                <p style="color: var(--text-muted);">No lunch item match found.</p>
+                {% endif %}
+                {% endwith %}
+            </div>
+
+            {% with item=lunch_items.first %}
+            {% if item %}
+            <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-color); padding-top: 0.75rem;">
+                <span style="font-weight: 800; font-size: 1.15rem; color: var(--dark-color);">₹{{ item.price }}</span>
+                <form action="{% url 'add_to_cart' item.id %}" method="POST">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-primary btn-sm">+ Add Meal</button>
+                </form>
+            </div>
+            {% endif %}
+            {% endwith %}
+        </div>
+
+        <!-- Snack Meal -->
+        <div class="card" style="border-top: 4px solid #2ecc71; display: flex; flex-direction: column; justify-content: space-between;">
+            <div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+                    <span style="font-weight: 800; color: #27ae60; font-size: 0.9rem;"><i class="fa-solid fa-mug-hot"></i> ☕ EVENING SNACK</span>
+                </div>
+
+                {% with item=snack_items.first %}
+                {% if item %}
+                <h3 style="font-size: 1.15rem; margin-bottom: 0.4rem;">{{ item.food_name }}</h3>
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">From {{ item.restaurant.restaurant_name }}</p>
+
+                <div style="background: #e6fffa; padding: 0.65rem; border-radius: var(--radius-sm); border: 1px solid #b2f5ea; margin-bottom: 1rem; font-size: 0.85rem;">
+                    <div style="display: flex; justify-content: space-between; font-weight: 700; color: #234e52;">
+                        <span>🔥 {{ item.calories }} kcal</span>
+                        <span>💪 {{ item.protein }}g Protein</span>
+                    </div>
+                </div>
+                {% else %}
+                <p style="color: var(--text-muted);">No snack item match found.</p>
+                {% endif %}
+                {% endwith %}
+            </div>
+
+            {% with item=snack_items.first %}
+            {% if item %}
+            <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-color); padding-top: 0.75rem;">
+                <span style="font-weight: 800; font-size: 1.15rem; color: var(--dark-color);">₹{{ item.price }}</span>
+                <form action="{% url 'add_to_cart' item.id %}" method="POST">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-primary btn-sm">+ Add Meal</button>
+                </form>
+            </div>
+            {% endif %}
+            {% endwith %}
+        </div>
+
+        <!-- Dinner Meal -->
+        <div class="card" style="border-top: 4px solid #9b59b6; display: flex; flex-direction: column; justify-content: space-between;">
+            <div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+                    <span style="font-weight: 800; color: #8e44ad; font-size: 0.9rem;"><i class="fa-solid fa-moon"></i> 🌙 DINNER</span>
+                </div>
+
+                {% with item=dinner_items.first %}
+                {% if item %}
+                <h3 style="font-size: 1.15rem; margin-bottom: 0.4rem;">{{ item.food_name }}</h3>
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">From {{ item.restaurant.restaurant_name }}</p>
+
+                <div style="background: #faf5ff; padding: 0.65rem; border-radius: var(--radius-sm); border: 1px solid #e9d8fd; margin-bottom: 1rem; font-size: 0.85rem;">
+                    <div style="display: flex; justify-content: space-between; font-weight: 700; color: #553c9a;">
+                        <span>🔥 {{ item.calories }} kcal</span>
+                        <span>💪 {{ item.protein }}g Protein</span>
+                    </div>
+                </div>
+                {% else %}
+                <p style="color: var(--text-muted);">No dinner item match found.</p>
+                {% endif %}
+                {% endwith %}
+            </div>
+
+            {% with item=dinner_items.first %}
+            {% if item %}
+            <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-color); padding-top: 0.75rem;">
+                <span style="font-weight: 800; font-size: 1.15rem; color: var(--dark-color);">₹{{ item.price }}</span>
+                <form action="{% url 'add_to_cart' item.id %}" method="POST">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-primary btn-sm">+ Add Meal</button>
+                </form>
+            </div>
+            {% endif %}
+            {% endwith %}
+        </div>
+
+    </div>
+</div>
+{% endblock %}

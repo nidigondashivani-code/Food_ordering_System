@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Health & Fitness Mode - FoodHub{% endblock %}
+
+{% block content %}
+<div style="max-width: 1100px; margin: 0 auto;">
+    <!-- Top Health & Fitness Banner -->
+    <div style="background: linear-gradient(135deg, #11998e, #38ef7d); color: white; padding: 2.5rem 2rem; border-radius: var(--radius-lg); margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1.5rem; box-shadow: var(--shadow-md);">
+        <div>
+            <span style="background: rgba(255,255,255,0.2); color: white; font-size: 0.85rem; font-weight: 800; padding: 0.3rem 0.85rem; border-radius: var(--radius-full); text-transform: uppercase; letter-spacing: 0.5px;">
+                🥗 Fitness & Nutrition Portal
+            </span>
+            <h1 style="color: white; font-size: 2.2rem; margin: 0.5rem 0 0.3rem;"><i class="fa-solid fa-heart-pulse"></i> Health Mode</h1>
+            <p style="color: #e8f5e9; font-size: 1.05rem; max-width: 600px;">
+                Track your macros and fuel your body with wholesome, low-calorie, high-protein, and nutrient-dense meals.
+            </p>
+        </div>
+        <div style="background: rgba(255,255,255,0.15); backdrop-filter: blur(10px); padding: 1.25rem 1.75rem; border-radius: var(--radius-md); text-align: center; border: 1px solid rgba(255,255,255,0.3);">
+            <div style="font-size: 2rem; font-weight: 800; color: white;"><i class="fa-solid fa-fire"></i> &lt; 400</div>
+            <small style="color: #e8f5e9; font-weight: 600;">Calorie Target per Dish</small>
+        </div>
+    </div>
+
+    <!-- Health Filter Buttons -->
+    <div style="display: flex; gap: 0.75rem; flex-wrap: wrap; margin-bottom: 2rem;">
+        <a href="{% url 'healthy_menu' %}" class="btn {% if filter_type == 'all' or not filter_type %}btn-primary{% else %}btn-secondary{% endif %}" style="border-radius: var(--radius-full);">
+            🥗 All Healthy Dishes
+        </a>
+        <a href="{% url 'healthy_menu' %}?filter=low_calorie" class="btn {% if filter_type == 'low_calorie' %}btn-primary{% else %}btn-secondary{% endif %}" style="border-radius: var(--radius-full);">
+            🔥 Low Calorie (<400 kcal)
+        </a>
+        <a href="{% url 'healthy_menu' %}?filter=high_protein" class="btn {% if filter_type == 'high_protein' %}btn-primary{% else %}btn-secondary{% endif %}" style="border-radius: var(--radius-full);">
+            💪 High Protein (>20g)
+        </a>
+        <a href="{% url 'healthy_menu' %}?filter=low_carb" class="btn {% if filter_type == 'low_carb' %}btn-primary{% else %}btn-secondary{% endif %}" style="border-radius: var(--radius-full);">
+            🥑 Low Carb (<30g)
+        </a>
+        <a href="{% url 'healthy_menu' %}?filter=veg" class="btn {% if filter_type == 'veg' %}btn-primary{% else %}btn-secondary{% endif %}" style="border-radius: var(--radius-full);">
+            🌱 Pure Veg Clean Meals
+        </a>
+    </div>
+
+    <!-- Food Cards Grid -->
+    {% if menu_items %}
+    <div class="grid-3" style="margin-bottom: 3rem;">
+        {% for item in menu_items %}
+        <div class="card" style="display: flex; flex-direction: column; justify-content: space-between; padding: 1.25rem; border-top: 4px solid #2ecc71;">
+            <div>
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.6rem;">
+                    {% if item.is_veg %}
+                        <span class="veg-badge">Veg</span>
+                    {% else %}
+                        <span class="nonveg-badge">Non-Veg</span>
+                    {% endif %}
+
+                    <span style="font-size: 0.8rem; background: #e6fffa; color: #234e52; font-weight: 700; padding: 0.2rem 0.6rem; border-radius: var(--radius-full);">
+                        🔥 {{ item.calories }} kcal
+                    </span>
+                </div>
+
+                <h3 style="font-size: 1.2rem; margin-bottom: 0.3rem;">{{ item.food_name }}</h3>
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem; line-height: 1.4;">
+                    {{ item.description }}
+                </p>
+
+                <!-- Macro Breakdown Widget -->
+                <div style="background: #f8fafc; padding: 0.75rem; border-radius: var(--radius-md); margin-bottom: 1rem; border: 1px solid #e2e8f0;">
+                    <div style="font-size: 0.8rem; font-weight: 700; color: #4a5568; margin-bottom: 0.5rem; text-transform: uppercase;">Macronutrient Breakdown</div>
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); text-align: center; gap: 0.5rem; font-size: 0.85rem;">
+                        <div style="background: #ffffff; padding: 0.4rem; border-radius: var(--radius-sm); border: 1px solid #edf2f7;">
+                            <strong style="color: #27ae60; display: block;">{{ item.protein }}g</strong>
+                            <small style="color: var(--text-muted);">Protein</small>
+                        </div>
+                        <div style="background: #ffffff; padding: 0.4rem; border-radius: var(--radius-sm); border: 1px solid #edf2f7;">
+                            <strong style="color: #2980b9; display: block;">{{ item.carbs }}g</strong>
+                            <small style="color: var(--text-muted);">Carbs</small>
+                        </div>
+                        <div style="background: #ffffff; padding: 0.4rem; border-radius: var(--radius-sm); border: 1px solid #edf2f7;">
+                            <strong style="color: #e67e22; display: block;">{{ item.fat }}g</strong>
+                            <small style="color: var(--text-muted);">Fat</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <p style="font-size: 0.8rem; color: #718096; margin-bottom: 0.75rem;">
+                    From: <strong style="color: var(--dark-color);">{{ item.restaurant.restaurant_name }}</strong>
+                </p>
+
+                <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-color); padding-top: 0.75rem;">
+                    <span style="font-size: 1.25rem; font-weight: 800; color: var(--dark-color);">₹{{ item.price }}</span>
+
+                    <form action="{% url 'add_to_cart' item.id %}" method="POST" style="display: inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-primary btn-sm">
+                            <i class="fa-solid fa-plus"></i> Add Meal
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="card" style="text-align: center; padding: 3rem 1rem; color: var(--text-muted); margin-bottom: 3rem;">
+        <i class="fa-solid fa-heart-pulse" style="font-size: 3rem; color: #cbd5e1; margin-bottom: 0.5rem;"></i>
+        <p>No health menu items found matching this filter.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

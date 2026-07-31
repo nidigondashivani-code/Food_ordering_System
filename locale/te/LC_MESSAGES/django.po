@@ -1,0 +1,51 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: FoodHub 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-07-29 18:00+0000\n"
+"PO-Revision-Date: 2026-07-29 18:00+0000\n"
+"Last-Translator: FoodHub Team\n"
+"Language-Team: Telugu\n"
+"Language: te\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "Home"
+msgstr "హోమ్"
+
+msgid "Customer Home"
+msgstr "కస్టమర్ హోమ్"
+
+msgid "Restaurants"
+msgstr "రెస్టారెంట్లు"
+
+msgid "Meal Planner"
+msgstr "మీల్ ప్లానర్"
+
+msgid "Health Mode"
+msgstr "హెల్త్ మోడ్"
+
+msgid "Voice Order"
+msgstr "వాయిస్ ఆర్డర్"
+
+msgid "Cart"
+msgstr "కార్ట్"
+
+msgid "Orders"
+msgstr "ఆర్డర్లు"
+
+msgid "Profile"
+msgstr "ప్రొఫైల్"
+
+msgid "Logout"
+msgstr "లాగౌట్"
+
+msgid "Login"
+msgstr "లాగిన్"
+
+msgid "Customer Register"
+msgstr "కస్టమర్ రిజిస్టర్"
+
+msgid "Owner Register"
+msgstr "ఓనర్ రిజిస్టర్"

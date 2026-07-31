@@ -1,0 +1,126 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ restaurant.restaurant_name }} Menu - FoodHub{% endblock %}
+
+{% block content %}
+<!-- Restaurant Header Card -->
+<div class="card" style="margin-bottom: 2rem; padding: 2rem; background: linear-gradient(135deg, #1e272e, #2d3436); color: white; border: none;">
+    <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem;">
+        <div>
+            <span class="rating-badge" style="margin-bottom: 0.75rem; display: inline-block;">
+                <i class="fa-solid fa-star"></i> {{ restaurant.rating }} Stars
+            </span>
+            <h1 style="color: white; font-size: 2.2rem; margin-bottom: 0.4rem;">{{ restaurant.restaurant_name }}</h1>
+            <p style="color: #cbd5e1; font-size: 1.05rem; margin-bottom: 0.75rem;">
+                <i class="fa-solid fa-bowl-food" style="color: var(--secondary-color);"></i> {{ restaurant.cuisine }}
+            </p>
+            <p style="color: #a0aec0; font-size: 0.9rem;">
+                <i class="fa-solid fa-location-dot"></i> {{ restaurant.address }}, {{ restaurant.city }} • <i class="fa-solid fa-phone"></i> {{ restaurant.phone }}
+            </p>
+        </div>
+
+        <div style="background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); padding: 1rem 1.5rem; border-radius: var(--radius-md); text-align: right;">
+            <p style="font-size: 0.9rem; color: #cbd5e1;"><i class="fa-solid fa-clock"></i> Delivery Time</p>
+            <strong style="font-size: 1.3rem; color: white;">{{ restaurant.delivery_time }} Mins</strong>
+            <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.2); margin: 0.5rem 0;">
+            <small style="color: #a0aec0;">Min Order: ₹{{ restaurant.minimum_order }}</small>
+        </div>
+    </div>
+</div>
+
+<!-- Menu Filter Bar -->
+<div style="margin-bottom: 2rem;">
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1rem;">
+        <h2>Explore Menu Items</h2>
+
+        <form action="{% url 'restaurant_detail' restaurant.id %}" method="GET" style="display: flex; gap: 0.5rem;">
+            <input type="text" name="search" class="form-control" placeholder="Search dish..." value="{{ request.GET.search|default:'' }}" style="padding: 0.5rem 0.85rem;">
+            <button type="submit" class="btn btn-primary btn-sm">Search</button>
+        </form>
+    </div>
+
+    <!-- Category Pills -->
+    {% if categories %}
+    <div style="display: flex; gap: 0.6rem; overflow-x: auto; padding-bottom: 0.5rem;">
+        <a href="{% url 'restaurant_detail' restaurant.id %}" class="btn btn-sm {% if not request.GET.category %}btn-primary{% else %}btn-secondary{% endif %}">
+            All Dishes
+        </a>
+        {% for cat in categories %}
+        <a href="{% url 'restaurant_detail' restaurant.id %}?category={{ cat }}" class="btn btn-sm {% if request.GET.category == cat %}btn-primary{% else %}btn-secondary{% endif %}">
+            {{ cat }}
+        </a>
+        {% endfor %}
+    </div>
+    {% endif %}
+</div>
+
+<!-- Menu Items Grid -->
+{% if menu_items %}
+<div class="grid-3" style="margin-bottom: 3rem;">
+    {% for item in menu_items %}
+    <div class="card" style="display: flex; flex-direction: column; justify-content: space-between; padding: 1.25rem;">
+        <div>
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.5rem;">
+                {% if item.is_veg %}
+                    <span class="veg-badge">Veg</span>
+                {% else %}
+                    <span class="nonveg-badge">Non-Veg</span>
+                {% endif %}
+
+                {% if item.is_popular %}
+                    <span style="font-size: 0.75rem; background: #fff3bf; color: #d9480f; padding: 0.2rem 0.5rem; border-radius: 4px; font-weight: 700;">
+                        🔥 Bestseller
+                    </span>
+                {% endif %}
+            </div>
+
+            <h3 style="font-size: 1.2rem; margin-bottom: 0.3rem;">{{ item.food_name }}</h3>
+            <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 0.85rem; line-height: 1.4;">
+                {{ item.description }}
+            </p>
+
+            <div style="font-size: 0.78rem; background: #f8fafc; padding: 0.5rem 0.75rem; border-radius: var(--radius-sm); color: #718096; margin-bottom: 1rem; border: 1px solid #edf2f7;">
+                🔥 {{ item.calories }} kcal • Protein: {{ item.protein }}g • Carbs: {{ item.carbs }}g • Fat: {{ item.fat }}g
+            </div>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.5rem; border-top: 1px solid var(--border-color); padding-top: 0.75rem;">
+            <span style="font-size: 1.3rem; font-weight: 800; color: var(--dark-color);">₹{{ item.price }}</span>
+            
+            <form action="{% url 'add_to_cart' item.id %}" method="POST" style="display: inline;">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-primary btn-sm">
+                    <i class="fa-solid fa-plus"></i> Add to Cart
+                </button>
+            </form>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="card" style="text-align: center; padding: 3rem 1rem; color: var(--text-muted); margin-bottom: 3rem;">
+    <i class="fa-solid fa-utensils" style="font-size: 3rem; color: #cbd5e1; margin-bottom: 0.5rem;"></i>
+    <p>No menu items available matching your filter.</p>
+</div>
+{% endif %}
+
+<!-- Customer Reviews Section -->
+{% if reviews %}
+<div class="card">
+    <h2 style="font-size: 1.3rem; margin-bottom: 1.25rem;"><i class="fa-solid fa-star" style="color: #f1c40f;"></i> What Customers Say</h2>
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem;">
+        {% for rev in reviews %}
+        <div style="background: #f8fafc; padding: 1rem; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 0.3rem;">
+                <strong>{{ rev.user.first_name|default:rev.user.username }}</strong>
+                <span style="color: #f1c40f; font-weight: 700;">★ {{ rev.rating }}.0</span>
+            </div>
+            <p style="font-size: 0.88rem; color: #4a5568; line-height: 1.4;">"{{ rev.comment }}"</p>
+            <small style="color: var(--text-muted); margin-top: 0.4rem; display: block;">{{ rev.created_at|date:"d M Y" }}</small>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+{% endblock %}

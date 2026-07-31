@@ -1,0 +1,155 @@
+{% extends 'base.html' %}
+
+{% block title %}Live Track Order #{{ order.order_number }} - FoodHub{% endblock %}
+
+{% block extra_css %}
+<!-- Leaflet CSS & JS for Live Map Tracking -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+    #map {
+        height: 340px;
+        width: 100%;
+        border-radius: var(--radius-md);
+        box-shadow: var(--shadow-sm);
+        z-index: 1;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div style="max-width: 850px; margin: 0 auto;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+        <div>
+            <h1><i class="fa-solid fa-location-crosshairs" style="color: var(--primary-color);"></i> Live Order Tracking</h1>
+            <p style="color: var(--text-muted); font-size: 0.95rem;">Order Number: <strong style="color: var(--dark-color);">#{{ order.order_number }}</strong></p>
+        </div>
+        <a href="{% url 'order_invoice' order.order_number %}" class="btn btn-secondary btn-sm" target="_blank">
+            <i class="fa-solid fa-file-invoice"></i> View Invoice
+        </a>
+    </div>
+
+    <!-- Live Map Container Card -->
+    <div class="card" style="margin-bottom: 2rem; padding: 1.25rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+            <h3 style="font-size: 1.1rem;"><i class="fa-solid fa-map-location-dot" style="color: var(--primary-color);"></i> Live GPS Delivery Route</h3>
+            <span style="font-size: 0.85rem; background: #e6fffa; color: #234e52; font-weight: 700; padding: 0.25rem 0.65rem; border-radius: var(--radius-full);">
+                🟢 Live Tracking Active
+            </span>
+        </div>
+
+        <!-- Leaflet Map Container -->
+        <div id="map"></div>
+    </div>
+
+    <!-- Progress Bar Card -->
+    <div class="card" style="margin-bottom: 2rem; padding: 2rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+            <div>
+                <span style="font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700;">Current Status</span>
+                <h2 style="color: var(--primary-color); font-size: 1.5rem;">
+                    {% if order.status == 'Confirmed' %}<i class="fa-solid fa-check-double"></i> Order Confirmed
+                    {% elif order.status == 'Preparing' %}<i class="fa-solid fa-fire-burner"></i> Preparing in Kitchen
+                    {% elif order.status == 'Ready for Pickup' %}<i class="fa-solid fa-box-open"></i> Packed & Ready
+                    {% elif order.status == 'Out for Delivery' %}<i class="fa-solid fa-motorcycle"></i> Out for Delivery
+                    {% elif order.status == 'Delivered' %}<i class="fa-solid fa-house-circle-check" style="color: #27ae60;"></i> Delivered!
+                    {% else %}{{ order.status }}{% endif %}
+                </h2>
+            </div>
+            <div style="text-align: right;">
+                <span style="font-size: 0.85rem; color: var(--text-muted);">Estimated Delivery</span>
+                <h3 style="color: var(--dark-color); font-size: 1.3rem;"><i class="fa-solid fa-clock"></i> {{ order.restaurant.delivery_time|default:30 }} Mins</h3>
+            </div>
+        </div>
+
+        <!-- Progress Bar Line -->
+        <div style="background: #e2e8f0; height: 10px; border-radius: var(--radius-full); overflow: hidden; margin-bottom: 2rem;">
+            <div style="background: linear-gradient(90deg, var(--primary-color), #27ae60); height: 100%; width: {{ progress_pct }}%; transition: width 0.6s ease;"></div>
+        </div>
+
+        <!-- Timeline Steps -->
+        <div style="display: grid; grid-template-columns: repeat(5, 1fr); text-align: center; gap: 0.5rem; font-size: 0.85rem;">
+            <div style="{% if progress_pct >= 20 %}color: var(--primary-color); font-weight: 700;{% else %}color: #a0aec0;{% endif %}">
+                <div style="font-size: 1.25rem; margin-bottom: 0.3rem;"><i class="fa-solid fa-receipt"></i></div>
+                Order Placed
+            </div>
+            <div style="{% if progress_pct >= 40 %}color: var(--primary-color); font-weight: 700;{% else %}color: #a0aec0;{% endif %}">
+                <div style="font-size: 1.25rem; margin-bottom: 0.3rem;"><i class="fa-solid fa-user-check"></i></div>
+                Confirmed
+            </div>
+            <div style="{% if progress_pct >= 60 %}color: var(--primary-color); font-weight: 700;{% else %}color: #a0aec0;{% endif %}">
+                <div style="font-size: 1.25rem; margin-bottom: 0.3rem;"><i class="fa-solid fa-utensils"></i></div>
+                Preparing
+            </div>
+            <div style="{% if progress_pct >= 80 %}color: var(--primary-color); font-weight: 700;{% else %}color: #a0aec0;{% endif %}">
+                <div style="font-size: 1.25rem; margin-bottom: 0.3rem;"><i class="fa-solid fa-motorcycle"></i></div>
+                On The Way
+            </div>
+            <div style="{% if progress_pct >= 100 %}color: #27ae60; font-weight: 700;{% else %}color: #a0aec0;{% endif %}">
+                <div style="font-size: 1.25rem; margin-bottom: 0.3rem;"><i class="fa-solid fa-circle-check"></i></div>
+                Delivered
+            </div>
+        </div>
+    </div>
+
+    <!-- Restaurant & Delivery Details -->
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 2rem;">
+        <div class="card">
+            <h3 style="font-size: 1.1rem; margin-bottom: 0.75rem;"><i class="fa-solid fa-store" style="color: var(--primary-color);"></i> Restaurant Information</h3>
+            <p style="font-weight: 700; color: var(--dark-color);">{{ order.restaurant.restaurant_name }}</p>
+            <p style="font-size: 0.9rem; color: var(--text-muted);"><i class="fa-solid fa-location-dot"></i> {{ order.restaurant.address }}, {{ order.restaurant.city }}</p>
+            <p style="font-size: 0.9rem; color: var(--text-muted); margin-top: 0.3rem;"><i class="fa-solid fa-phone"></i> {{ order.restaurant.phone }}</p>
+        </div>
+
+        <div class="card">
+            <h3 style="font-size: 1.1rem; margin-bottom: 0.75rem;"><i class="fa-solid fa-user-ninja" style="color: var(--secondary-color);"></i> Delivery Partner</h3>
+            {% if order.delivery_partner %}
+                <p style="font-weight: 700; color: var(--dark-color);">{{ order.delivery_partner.first_name|default:order.delivery_partner.username }}</p>
+                <p style="font-size: 0.9rem; color: var(--text-muted);"><i class="fa-solid fa-phone"></i> {{ order.delivery_partner.phone }}</p>
+                <span class="btn btn-success btn-sm" style="margin-top: 0.5rem; display: inline-block;">On Delivery Job</span>
+            {% else %}
+                <p style="font-size: 0.9rem; color: var(--text-muted);">Assigning nearest delivery partner...</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    // Coordinates: Restaurant, Mid-point (Driver), Customer
+    const restCoords = [17.4126, 78.4312];  // Banjara Hills
+    const custCoords = [17.4401, 78.3489];  // Gachibowli
+    const driverCoords = [17.4263, 78.3900]; // Live moving position
+
+    // Initialize Leaflet Map
+    const map = L.map('map').setView(driverCoords, 13);
+
+    // Add OpenStreetMap Tiles
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
+
+    // Custom Icon Markers
+    const restMarker = L.marker(restCoords).addTo(map)
+        .bindPopup("<b>🏪 {{ order.restaurant.restaurant_name }}</b><br>Kitchen / Pickup Point")
+        .openPopup();
+
+    const custMarker = L.marker(custCoords).addTo(map)
+        .bindPopup("<b>🏠 Delivery Destination</b><br>{{ order.delivery_address|truncatechars:40 }}");
+
+    const driverMarker = L.marker(driverCoords).addTo(map)
+        .bindPopup("<b>🏍️ Delivery Partner</b><br>On the way with your food!");
+
+    // Draw route line
+    const routeLine = L.polyline([restCoords, driverCoords, custCoords], {
+        color: '#ff3838',
+        weight: 4,
+        opacity: 0.8,
+        dashArray: '8, 8'
+    }).addTo(map);
+
+    // Auto-fit bounds
+    map.fitBounds(routeLine.getBounds(), { padding: [30, 30] });
+});
+</script>
+{% endblock %}

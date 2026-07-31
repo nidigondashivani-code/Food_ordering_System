@@ -1,0 +1,193 @@
+{% extends 'base.html' %}
+
+{% block title %}Checkout - FoodHub{% endblock %}
+
+{% block extra_css %}
+<!-- PayPal JS SDK -->
+<script src="https://www.paypal.com/sdk/js?client-id=test&currency=USD"></script>
+{% endblock %}
+
+{% block content %}
+<div style="max-width: 1000px; margin: 0 auto;">
+    <h1 style="margin-bottom: 1.5rem;"><i class="fa-solid fa-credit-card" style="color: var(--primary-color);"></i> Checkout</h1>
+
+    <form id="checkoutForm" action="{% url 'checkout' %}" method="POST">
+        {% csrf_token %}
+        <div style="display: grid; grid-template-columns: 1fr 340px; gap: 2rem; align-items: start;">
+            
+            <!-- Delivery & Payment Info -->
+            <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+                
+                <!-- Delivery Address Card -->
+                <div class="card">
+                    <h3 style="margin-bottom: 1.25rem; display: flex; align-items: center; gap: 0.5rem;">
+                        <i class="fa-solid fa-location-dot" style="color: var(--primary-color);"></i> 1. Delivery Details
+                    </h3>
+
+                    <div class="form-group">
+                        <label for="phone">Contact Phone Number *</label>
+                        <input type="text" id="phone" name="phone" class="form-control" value="{{ user.phone|default:'' }}" required placeholder="10-digit mobile number">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="delivery_address">Complete Delivery Address *</label>
+                        <textarea id="delivery_address" name="delivery_address" class="form-control" rows="3" required placeholder="House/Flat No., Building, Street Name, Colony, Landmark">{{ user.address|default:'' }}</textarea>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label for="special_notes">Special Instructions for Delivery (Optional)</label>
+                        <input type="text" id="special_notes" name="special_notes" class="form-control" placeholder="e.g. Ring the doorbell, leave at front gate">
+                    </div>
+                </div>
+
+                <!-- Payment Method Card -->
+                <div class="card">
+                    <h3 style="margin-bottom: 1.25rem; display: flex; align-items: center; gap: 0.5rem;">
+                        <i class="fa-solid fa-wallet" style="color: var(--primary-color);"></i> 2. Payment Method
+                    </h3>
+
+                    <div style="display: flex; flex-direction: column; gap: 0.85rem; margin-bottom: 1rem;">
+                        <label style="display: flex; align-items: center; gap: 0.85rem; padding: 1rem; border: 1px solid var(--border-color); border-radius: var(--radius-md); cursor: pointer; background: #ffffff;">
+                            <input type="radio" name="payment_method" value="COD" checked onclick="togglePaymentMode('COD')" style="accent-color: var(--primary-color); width: 18px; height: 18px;">
+                            <div>
+                                <strong style="color: var(--dark-color); display: block;"><i class="fa-solid fa-money-bill-wave" style="color: #27ae60;"></i> Cash on Delivery (COD)</strong>
+                                <span style="font-size: 0.85rem; color: var(--text-muted);">Pay in cash when your food arrives</span>
+                            </div>
+                        </label>
+
+                        <label style="display: flex; align-items: center; gap: 0.85rem; padding: 1rem; border: 1px solid var(--border-color); border-radius: var(--radius-md); cursor: pointer; background: #ffffff;">
+                            <input type="radio" name="payment_method" value="PayPal" onclick="togglePaymentMode('PayPal')" style="accent-color: var(--primary-color); width: 18px; height: 18px;">
+                            <div>
+                                <strong style="color: var(--dark-color); display: block;"><i class="fa-brands fa-paypal" style="color: #003087;"></i> PayPal / Credit Card International</strong>
+                                <span style="font-size: 0.85rem; color: var(--text-muted);">Pay securely using your PayPal account or card</span>
+                            </div>
+                        </label>
+
+                        <label style="display: flex; align-items: center; gap: 0.85rem; padding: 1rem; border: 1px solid var(--border-color); border-radius: var(--radius-md); cursor: pointer; background: #ffffff;">
+                            <input type="radio" name="payment_method" value="UPI" onclick="togglePaymentMode('UPI')" style="accent-color: var(--primary-color); width: 18px; height: 18px;">
+                            <div>
+                                <strong style="color: var(--dark-color); display: block;"><i class="fa-solid fa-mobile-screen-button" style="color: #2980b9;"></i> Instant UPI / GPay / PhonePe</strong>
+                                <span style="font-size: 0.85rem; color: var(--text-muted);">Fast payment via any UPI app</span>
+                            </div>
+                        </label>
+                    </div>
+
+                    <!-- PayPal Smart Buttons Container -->
+                    <div id="paypal-button-container" style="display: none; margin-top: 1rem;"></div>
+                </div>
+
+            </div>
+
+            <!-- Order Summary Sidebar -->
+            <div class="card" style="position: sticky; top: 90px;">
+                <h3 style="margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border-color);">Order Summary</h3>
+
+                {% if restaurant %}
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">
+                    From: <strong style="color: var(--dark-color);">{{ restaurant.restaurant_name }}</strong>
+                </p>
+                {% endif %}
+
+                <!-- Items Breakdown -->
+                <div style="max-height: 220px; overflow-y: auto; margin-bottom: 1rem; padding-right: 0.5rem;">
+                    {% for item in cart.items.all %}
+                    <div style="display: flex; justify-content: space-between; font-size: 0.9rem; margin-bottom: 0.6rem;">
+                        <span>{{ item.quantity }} x {{ item.menu_item.food_name }}</span>
+                        <strong style="color: var(--dark-color);">₹{{ item.get_cost }}</strong>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <hr style="border: 0; border-top: 1px dashed var(--border-color); margin-bottom: 1rem;">
+
+                <div style="font-size: 0.9rem; display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1.25rem;">
+                    <div style="display: flex; justify-content: space-between; color: var(--text-muted);">
+                        <span>Subtotal</span>
+                        <span>₹{{ subtotal }}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; color: var(--text-muted);">
+                        <span>Delivery Fee</span>
+                        <span>₹{{ delivery_fee }}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; color: var(--text-muted);">
+                        <span>Taxes (5%)</span>
+                        <span>₹{{ tax }}</span>
+                    </div>
+                    {% if discount > 0 %}
+                    <div style="display: flex; justify-content: space-between; color: #27ae60; font-weight: 600;">
+                        <span>Coupon Discount</span>
+                        <span>-₹{{ discount }}</span>
+                    </div>
+                    {% endif %}
+
+                    <div style="display: flex; justify-content: space-between; font-size: 1.2rem; font-weight: 800; color: var(--dark-color); margin-top: 0.5rem; padding-top: 0.5rem; border-top: 1px solid var(--border-color);">
+                        <span>To Pay</span>
+                        <span style="color: var(--primary-color);">₹{{ total }}</span>
+                    </div>
+                </div>
+
+                <button id="standardSubmitBtn" type="submit" class="btn btn-primary btn-block" style="padding: 1rem;">
+                    <i class="fa-solid fa-lock"></i> Place Order Now
+                </button>
+            </div>
+
+        </div>
+    </form>
+</div>
+
+<script>
+function togglePaymentMode(mode) {
+    const paypalContainer = document.getElementById('paypal-button-container');
+    const standardBtn = document.getElementById('standardSubmitBtn');
+    if (mode === 'PayPal') {
+        paypalContainer.style.display = 'block';
+        standardBtn.style.display = 'none';
+    } else {
+        paypalContainer.style.display = 'none';
+        standardBtn.style.display = 'block';
+    }
+}
+
+// Render PayPal Smart Buttons
+if (window.paypal) {
+    paypal.Buttons({
+        createOrder: function(data, actions) {
+            return actions.order.create({
+                purchase_units: [{
+                    amount: {
+                        value: '{{ total }}'
+                    }
+                }]
+            });
+        },
+        onApprove: function(data, actions) {
+            return actions.order.capture().then(function(details) {
+                const address = document.getElementById('delivery_address').value;
+                const phone = document.getElementById('phone').value;
+                
+                fetch("{% url 'paypal_complete' %}", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRFToken": "{{ csrf_token }}"
+                    },
+                    body: JSON.stringify({
+                        transaction_id: details.id,
+                        delivery_address: address,
+                        phone: phone
+                    })
+                })
+                .then(response => response.json())
+                .then(res => {
+                    if (res.status === 'success') {
+                        window.location.href = "/orders/confirmation/" + res.order_number + "/";
+                    } else {
+                        alert("Error completing order: " + res.message);
+                    }
+                });
+            });
+        }
+    }).render('#paypal-button-container');
+}
+</script>
+{% endblock %}
