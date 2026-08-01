@@ -99,8 +99,9 @@ class Restaurant(models.Model):
 
     @property
     def get_logo_url(self):
-        if self.logo_url and self.logo_url.strip():
-            return self.logo_url.strip()
+        url_str = (self.logo_url or '').strip()
+        if url_str.startswith('http://') or url_str.startswith('https://') or url_str.startswith('data:'):
+            return url_str
         if self.logo:
             img_str = str(self.logo)
             if img_str.startswith('http://') or img_str.startswith('https://') or img_str.startswith('data:'):
@@ -113,8 +114,9 @@ class Restaurant(models.Model):
 
     @property
     def get_cover_image_url(self):
-        if self.cover_image_url and self.cover_image_url.strip():
-            return self.cover_image_url.strip()
+        url_str = (self.cover_image_url or '').strip()
+        if url_str.startswith('http://') or url_str.startswith('https://') or url_str.startswith('data:'):
+            return url_str
         if self.cover_image:
             img_str = str(self.cover_image)
             if img_str.startswith('http://') or img_str.startswith('https://') or img_str.startswith('data:'):

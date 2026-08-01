@@ -78,8 +78,9 @@ class MenuItem(models.Model):
 
     @property
     def get_image_url(self):
-        if self.image_url and self.image_url.strip():
-            return self.image_url.strip()
+        url_str = (self.image_url or '').strip()
+        if url_str.startswith('http://') or url_str.startswith('https://') or url_str.startswith('data:'):
+            return url_str
         if self.image:
             img_str = str(self.image)
             if img_str.startswith('http://') or img_str.startswith('https://') or img_str.startswith('data:'):
