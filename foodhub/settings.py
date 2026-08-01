@@ -94,46 +94,29 @@ if DATABASE_URL and dj_database_url:
     DATABASES = {
         'default': dj_database_url.config(default=DATABASE_URL, conn_max_age=600)
     }
+elif os.environ.get('DB_HOST'):
+    db_host = os.environ.get('DB_HOST', '')
+    default_engine = 'django.db.backends.postgresql' if ('supabase' in db_host or 'postgres' in db_host) else 'django.db.backends.mysql'
+    DATABASES = {
+        'default': {
+            'ENGINE': os.environ.get('DB_ENGINE', default_engine),
+            'NAME': os.environ.get('DB_NAME', 'postgres'),
+            'USER': os.environ.get('DB_USER', 'postgres'),
+            'PASSWORD': os.environ.get('DB_PASSWORD', ''),
+            'HOST': db_host,
+            'PORT': os.environ.get('DB_PORT', '5432'),
+        }
+    }
 else:
-    try:
-        import MySQLdb  # noqa
-        db_engine = 'django.db.backends.mysql'
-    except ImportError:
-        db_engine = 'django.db.backends.sqlite3'
-    
-    if os.environ.get('DB_NAME'):
-        DATABASES = {
-            'default': {
-                'ENGINE': os.environ.get('DB_ENGINE', db_engine),
-                'NAME': os.environ.get('DB_NAME', 'food_ordering_db'),
-                'USER': os.environ.get('DB_USER', 'root'),
-                'PASSWORD': os.environ.get('DB_PASSWORD', 'root'),
-                'HOST': os.environ.get('DB_HOST', 'localhost'),
-                'PORT': os.environ.get('DB_PORT', '3307'),
-            }
+    db_path = BASE_DIR / 'db.sqlite3'
+    if not db_path.exists() and os.path.exists('/tmp'):
+        db_path = Path('/tmp') / 'db.sqlite3'
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': db_path,
         }
-    elif db_engine == 'django.db.backends.sqlite3':
-        db_path = BASE_DIR / 'db.sqlite3'
-        if not db_path.exists() and os.path.exists('/tmp'):
-            db_path = Path('/tmp') / 'db.sqlite3'
-        DATABASES = {
-            'default': {
-                'ENGINE': 'django.db.backends.sqlite3',
-                'NAME': db_path,
-            }
-        }
-
-    else:
-        DATABASES = {
-            'default': {
-                'ENGINE': 'django.db.backends.mysql',
-                'NAME': 'food_ordering_db',
-                'USER': 'root',
-                'PASSWORD': 'root',
-                'HOST': 'localhost',
-                'PORT': '3307',
-            }
-        }
+    }
 
 
 MEDIA_URL = '/media/'
