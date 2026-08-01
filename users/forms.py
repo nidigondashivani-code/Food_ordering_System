@@ -49,10 +49,11 @@ class RegisterForm(UserCreationForm):
             }),
             "profile_image": forms.FileInput(attrs={
                 "class": "form-control",
+                "accept": "image/*",
             }),
             "profile_image_url": forms.URLInput(attrs={
                 "class": "form-control",
-                "placeholder": "Or Paste Profile Image Link (e.g. https://...)",
+                "placeholder": "Or Paste Web Profile Image Link (https://...)",
             }),
         }
 
@@ -112,10 +113,11 @@ class OwnerRegisterForm(UserCreationForm):
             }),
             "profile_image": forms.FileInput(attrs={
                 "class": "form-control",
+                "accept": "image/*",
             }),
             "profile_image_url": forms.URLInput(attrs={
                 "class": "form-control",
-                "placeholder": "Or Paste Profile Image Link (e.g. https://...)",
+                "placeholder": "Or Paste Web Profile Image Link (https://...)",
             }),
         }
 

@@ -91,16 +91,16 @@
 
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
             <div class="form-group">
-                <label>Logo Image Link (URL)</label>
-                {{ form.logo_url }}
-                <label style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.2rem;">Or File Upload:</label>
+                <label style="font-weight: 700; color: var(--dark-color);">📁 Upload Logo Image from PC</label>
                 {{ form.logo }}
+                <label style="font-size: 0.82rem; color: var(--text-muted); margin-top: 0.4rem; display: block;">Or Paste Web Logo URL:</label>
+                {{ form.logo_url }}
             </div>
             <div class="form-group">
-                <label>Cover Banner Link (URL)</label>
-                {{ form.cover_image_url }}
-                <label style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.2rem;">Or File Upload:</label>
+                <label style="font-weight: 700; color: var(--dark-color);">📁 Upload Cover Banner from PC</label>
                 {{ form.cover_image }}
+                <label style="font-size: 0.82rem; color: var(--text-muted); margin-top: 0.4rem; display: block;">Or Paste Web Cover URL:</label>
+                {{ form.cover_image_url }}
             </div>
         </div>
 

@@ -45,14 +45,13 @@
         </div>
 
         <div class="form-group">
-            <label for="profile_image_url">Profile Picture Image Link (URL)</label>
-            <input type="url" id="profile_image_url" name="profile_image_url" class="form-control" value="{{ user.profile_image_url|default:'' }}" placeholder="Paste Image Link (e.g. https://...)">
-            <small style="color: var(--text-muted); font-size: 0.85rem; display: block; margin-top: 0.3rem;">Paste any direct web link (URL) to an image to instantly set your avatar.</small>
+            <label for="profile_image" style="font-weight: 700; color: var(--dark-color);">📁 Upload Profile Picture from PC</label>
+            <input type="file" id="profile_image" name="profile_image" class="form-control" accept="image/*">
         </div>
 
-        <div class="form-group">
-            <label for="profile_image">Or Upload Image File</label>
-            <input type="file" id="profile_image" name="profile_image" class="form-control">
+        <div class="form-group" style="margin-top: 0.75rem;">
+            <label for="profile_image_url" style="color: var(--text-muted); font-size: 0.9rem;">🌐 Or Paste Web Image Link (Optional)</label>
+            <input type="url" id="profile_image_url" name="profile_image_url" class="form-control" value="{{ user.profile_image_url|default:'' }}" placeholder="https://example.com/photo.jpg">
         </div>
 
         <button type="submit" class="btn btn-primary btn-block" style="padding: 0.9rem;">

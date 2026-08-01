@@ -66,12 +66,12 @@
 
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
             <div class="form-group">
-                <label>Food Image Link (URL)</label>
-                {{ form.image_url }}
+                <label style="font-weight: 700; color: var(--dark-color);">📁 Upload Food Image from PC</label>
+                {{ form.image }}
             </div>
             <div class="form-group">
-                <label>Or Upload Food Image File</label>
-                {{ form.image }}
+                <label style="color: var(--text-muted);">🌐 Or Paste Web Image URL</label>
+                {{ form.image_url }}
             </div>
         </div>
 

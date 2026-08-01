@@ -55,14 +55,14 @@
 
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
             <div class="form-group">
-                <label>Profile Picture Image Link (URL)</label>
-                {{ form.profile_image_url }}
-                {% if form.profile_image_url.errors %}<small style="color: #e53e3e;">{{ form.profile_image_url.errors|join:", " }}</small>{% endif %}
-            </div>
-            <div class="form-group">
-                <label>Or Upload Image File</label>
+                <label style="font-weight: 700;">📁 Upload Profile Picture from PC</label>
                 {{ form.profile_image }}
                 {% if form.profile_image.errors %}<small style="color: #e53e3e;">{{ form.profile_image.errors|join:", " }}</small>{% endif %}
+            </div>
+            <div class="form-group">
+                <label style="color: var(--text-muted);">🌐 Or Paste Web Image URL</label>
+                {{ form.profile_image_url }}
+                {% if form.profile_image_url.errors %}<small style="color: #e53e3e;">{{ form.profile_image_url.errors|join:", " }}</small>{% endif %}
             </div>
         </div>
 

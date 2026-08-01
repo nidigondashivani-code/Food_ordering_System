@@ -54,12 +54,13 @@ class MenuItemForm(forms.ModelForm):
             }),
 
             "image": forms.ClearableFileInput(attrs={
-                "class": "form-control"
+                "class": "form-control",
+                "accept": "image/*"
             }),
 
             "image_url": forms.URLInput(attrs={
                 "class": "form-control",
-                "placeholder": "Or Paste Food Image URL (https://...)"
+                "placeholder": "Or Paste Web Image URL (https://...)"
             }),
 
             "is_veg": forms.CheckboxInput(attrs={
