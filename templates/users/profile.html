@@ -49,7 +49,13 @@
         </div>
 
         <div class="form-group">
-            <label for="profile_image">Profile Picture</label>
+            <label for="profile_image_url">Profile Picture Image Link (URL)</label>
+            <input type="url" id="profile_image_url" name="profile_image_url" class="form-control" value="{{ user.profile_image_url|default:'' }}" placeholder="Paste Image Link (e.g. https://...)">
+            <small style="color: var(--text-muted); font-size: 0.85rem; display: block; margin-top: 0.3rem;">Paste any direct web link (URL) to an image to instantly set your avatar.</small>
+        </div>
+
+        <div class="form-group">
+            <label for="profile_image">Or Upload Image File</label>
             <input type="file" id="profile_image" name="profile_image" class="form-control">
         </div>
 

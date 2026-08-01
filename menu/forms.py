@@ -57,6 +57,11 @@ class MenuItemForm(forms.ModelForm):
                 "class": "form-control"
             }),
 
+            "image_url": forms.URLInput(attrs={
+                "class": "form-control",
+                "placeholder": "Or Paste Food Image URL (https://...)"
+            }),
+
             "is_veg": forms.CheckboxInput(attrs={
                 "class": "form-check-input"
             }),

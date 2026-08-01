@@ -77,11 +77,15 @@
 
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
             <div class="form-group">
-                <label>Logo Image</label>
+                <label>Logo Image Link (URL)</label>
+                {{ form.logo_url }}
+                <label style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.2rem;">Or Upload File:</label>
                 {{ form.logo }}
             </div>
             <div class="form-group">
-                <label>Cover Banner Image</label>
+                <label>Cover Banner Link (URL)</label>
+                {{ form.cover_image_url }}
+                <label style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.2rem;">Or Upload File:</label>
                 {{ form.cover_image }}
             </div>
         </div>

@@ -27,6 +27,11 @@ class User(AbstractUser):
         blank=True,
         null=True
     )
+    profile_image_url = models.CharField(
+        max_length=500,
+        blank=True,
+        null=True
+    )
     
     # Smart Meal Planner Fitness Goals
     daily_calorie_goal = models.PositiveIntegerField(default=2000)
@@ -41,6 +46,8 @@ class User(AbstractUser):
 
     @property
     def get_profile_image_url(self):
+        if self.profile_image_url and self.profile_image_url.strip():
+            return self.profile_image_url.strip()
         if not self.profile_image:
             return None
         img_str = str(self.profile_image)

@@ -15,6 +15,7 @@ class RegisterForm(UserCreationForm):
             "role",
             "address",
             "profile_image",
+            "profile_image_url",
         ]
 
         widgets = {
@@ -49,6 +50,10 @@ class RegisterForm(UserCreationForm):
             "profile_image": forms.FileInput(attrs={
                 "class": "form-control",
             }),
+            "profile_image_url": forms.URLInput(attrs={
+                "class": "form-control",
+                "placeholder": "Or Paste Profile Image Link (e.g. https://...)",
+            }),
         }
 
     def __init__(self, *args, **kwargs):
@@ -76,6 +81,7 @@ class OwnerRegisterForm(UserCreationForm):
             "phone",
             "address",
             "profile_image",
+            "profile_image_url",
         ]
 
         widgets = {
@@ -106,6 +112,10 @@ class OwnerRegisterForm(UserCreationForm):
             }),
             "profile_image": forms.FileInput(attrs={
                 "class": "form-control",
+            }),
+            "profile_image_url": forms.URLInput(attrs={
+                "class": "form-control",
+                "placeholder": "Or Paste Profile Image Link (e.g. https://...)",
             }),
         }
 

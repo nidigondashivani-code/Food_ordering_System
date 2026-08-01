@@ -54,8 +54,20 @@ class Restaurant(models.Model):
         null=True
     )
 
+    logo_url = models.CharField(
+        max_length=500,
+        blank=True,
+        null=True
+    )
+
     cover_image = models.ImageField(
         upload_to="restaurant/cover/",
+        blank=True,
+        null=True
+    )
+
+    cover_image_url = models.CharField(
+        max_length=500,
         blank=True,
         null=True
     )
@@ -87,6 +99,8 @@ class Restaurant(models.Model):
 
     @property
     def get_logo_url(self):
+        if self.logo_url and self.logo_url.strip():
+            return self.logo_url.strip()
         if not self.logo:
             return None
         img_str = str(self.logo)
@@ -99,6 +113,8 @@ class Restaurant(models.Model):
 
     @property
     def get_cover_image_url(self):
+        if self.cover_image_url and self.cover_image_url.strip():
+            return self.cover_image_url.strip()
         if not self.cover_image:
             return None
         img_str = str(self.cover_image)

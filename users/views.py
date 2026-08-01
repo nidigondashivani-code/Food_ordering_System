@@ -116,6 +116,7 @@ def user_profile(request):
         user.email = request.POST.get('email', user.email)
         user.phone = request.POST.get('phone', user.phone)
         user.address = request.POST.get('address', user.address)
+        user.profile_image_url = request.POST.get('profile_image_url', user.profile_image_url)
 
         if 'profile_image' in request.FILES:
             user.profile_image = request.FILES['profile_image']

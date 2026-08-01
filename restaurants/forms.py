@@ -29,7 +29,9 @@ class RestaurantRegistrationForm(forms.ModelForm):
             "minimum_order": forms.NumberInput(attrs={"class": "form-control"}),
             "delivery_time": forms.NumberInput(attrs={"class": "form-control", "placeholder": "Minutes"}),
             "logo": forms.ClearableFileInput(attrs={"class": "form-control"}),
+            "logo_url": forms.URLInput(attrs={"class": "form-control", "placeholder": "Or Paste Logo Image URL (https://...)"}),
             "cover_image": forms.ClearableFileInput(attrs={"class": "form-control"}),
+            "cover_image_url": forms.URLInput(attrs={"class": "form-control", "placeholder": "Or Paste Cover Image URL (https://...)"}),
             "fssai_license": forms.ClearableFileInput(attrs={"class": "form-control"}),
             "gst_number": forms.TextInput(attrs={"class": "form-control", "placeholder": "GSTIN Number"}),
         }

@@ -33,6 +33,12 @@ class MenuItem(models.Model):
         null=True
     )
 
+    image_url = models.CharField(
+        max_length=500,
+        blank=True,
+        null=True
+    )
+
     price = models.DecimalField(
         max_digits=8,
         decimal_places=2
@@ -72,6 +78,8 @@ class MenuItem(models.Model):
 
     @property
     def get_image_url(self):
+        if self.image_url and self.image_url.strip():
+            return self.image_url.strip()
         if not self.image:
             return None
         img_str = str(self.image)
