@@ -24,9 +24,9 @@
     <div class="card" style="display: flex; flex-direction: column; padding: 0; overflow: hidden;">
         <div style="height: 190px; background: #e2e8f0; position: relative;">
             {% if rest.get_cover_image_url %}
-                <img src="{{ rest.get_cover_image_url }}" alt="{{ rest.restaurant_name }}" style="width: 100%; height: 100%; object-fit: cover;">
+                <img src="{{ rest.get_cover_image_url }}" alt="{{ rest.restaurant_name }}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=1000&auto=format&fit=crop&q=80';">
             {% elif rest.get_logo_url %}
-                <img src="{{ rest.get_logo_url }}" alt="{{ rest.restaurant_name }}" style="width: 100%; height: 100%; object-fit: cover;">
+                <img src="{{ rest.get_logo_url }}" alt="{{ rest.restaurant_name }}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=400&auto=format&fit=crop&q=80';">
             {% else %}
                 <div style="width: 100%; height: 100%; background: linear-gradient(135deg, #ff7675, #d63031); display: flex; align-items: center; justify-content: center; color: white; font-size: 3.5rem;">
                     <i class="fa-solid fa-utensils"></i>

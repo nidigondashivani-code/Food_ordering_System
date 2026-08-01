@@ -80,15 +80,15 @@ class MenuItem(models.Model):
     def get_image_url(self):
         if self.image_url and self.image_url.strip():
             return self.image_url.strip()
-        if not self.image:
-            return None
-        img_str = str(self.image)
-        if img_str.startswith('http://') or img_str.startswith('https://') or img_str.startswith('data:'):
-            return img_str
-        try:
-            return self.image.url
-        except Exception:
-            return None
+        if self.image:
+            img_str = str(self.image)
+            if img_str.startswith('http://') or img_str.startswith('https://') or img_str.startswith('data:'):
+                return img_str
+            try:
+                return self.image.url
+            except Exception:
+                pass
+        return "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=600&auto=format&fit=crop&q=80"
 
     def __str__(self):
         return self.food_name

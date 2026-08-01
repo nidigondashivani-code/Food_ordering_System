@@ -101,29 +101,29 @@ class Restaurant(models.Model):
     def get_logo_url(self):
         if self.logo_url and self.logo_url.strip():
             return self.logo_url.strip()
-        if not self.logo:
-            return None
-        img_str = str(self.logo)
-        if img_str.startswith('http://') or img_str.startswith('https://') or img_str.startswith('data:'):
-            return img_str
-        try:
-            return self.logo.url
-        except Exception:
-            return None
+        if self.logo:
+            img_str = str(self.logo)
+            if img_str.startswith('http://') or img_str.startswith('https://') or img_str.startswith('data:'):
+                return img_str
+            try:
+                return self.logo.url
+            except Exception:
+                pass
+        return "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=400&auto=format&fit=crop&q=80"
 
     @property
     def get_cover_image_url(self):
         if self.cover_image_url and self.cover_image_url.strip():
             return self.cover_image_url.strip()
-        if not self.cover_image:
-            return None
-        img_str = str(self.cover_image)
-        if img_str.startswith('http://') or img_str.startswith('https://') or img_str.startswith('data:'):
-            return img_str
-        try:
-            return self.cover_image.url
-        except Exception:
-            return None
+        if self.cover_image:
+            img_str = str(self.cover_image)
+            if img_str.startswith('http://') or img_str.startswith('https://') or img_str.startswith('data:'):
+                return img_str
+            try:
+                return self.cover_image.url
+            except Exception:
+                pass
+        return "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=1000&auto=format&fit=crop&q=80"
 
     def __str__(self):
         return self.restaurant_name

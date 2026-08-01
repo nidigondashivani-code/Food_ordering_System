@@ -45,9 +45,9 @@
         {% for item in menu_items %}
         <div class="food-card">
             {% if item.get_image_url %}
-                <img src="{{ item.get_image_url }}" alt="{{ item.food_name }}">
+                <img src="{{ item.get_image_url }}" alt="{{ item.food_name }}" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=600&auto=format&fit=crop&q=80';">
             {% else %}
-                <img src="{% static 'images/no-image.png' %}" alt="Food Item">
+                <img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=600&auto=format&fit=crop&q=80" alt="{{ item.food_name }}">
             {% endif %}
 
             <div class="food-body">
