@@ -39,5 +39,17 @@ class User(AbstractUser):
 
     created_at = models.DateTimeField(auto_now_add=True)
 
+    @property
+    def get_profile_image_url(self):
+        if not self.profile_image:
+            return None
+        img_str = str(self.profile_image)
+        if img_str.startswith('http://') or img_str.startswith('https://') or img_str.startswith('data:'):
+            return img_str
+        try:
+            return self.profile_image.url
+        except Exception:
+            return None
+
     def __str__(self):
         return self.username

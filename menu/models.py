@@ -70,5 +70,17 @@ class MenuItem(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True)
 
+    @property
+    def get_image_url(self):
+        if not self.image:
+            return None
+        img_str = str(self.image)
+        if img_str.startswith('http://') or img_str.startswith('https://') or img_str.startswith('data:'):
+            return img_str
+        try:
+            return self.image.url
+        except Exception:
+            return None
+
     def __str__(self):
         return self.food_name

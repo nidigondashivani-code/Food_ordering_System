@@ -6,17 +6,24 @@
 <!-- Restaurant Header Card -->
 <div class="card" style="margin-bottom: 2rem; padding: 2rem; background: linear-gradient(135deg, #1e272e, #2d3436); color: white; border: none;">
     <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem;">
-        <div>
-            <span class="rating-badge" style="margin-bottom: 0.75rem; display: inline-block;">
-                <i class="fa-solid fa-star"></i> {{ restaurant.rating }} Stars
-            </span>
-            <h1 style="color: white; font-size: 2.2rem; margin-bottom: 0.4rem;">{{ restaurant.restaurant_name }}</h1>
-            <p style="color: #cbd5e1; font-size: 1.05rem; margin-bottom: 0.75rem;">
-                <i class="fa-solid fa-bowl-food" style="color: var(--secondary-color);"></i> {{ restaurant.cuisine }}
-            </p>
-            <p style="color: #a0aec0; font-size: 0.9rem;">
-                <i class="fa-solid fa-location-dot"></i> {{ restaurant.address }}, {{ restaurant.city }} • <i class="fa-solid fa-phone"></i> {{ restaurant.phone }}
-            </p>
+        <div style="display: flex; gap: 1.25rem; align-items: center;">
+            {% if restaurant.get_logo_url %}
+                <img src="{{ restaurant.get_logo_url }}" alt="{{ restaurant.restaurant_name }}" style="width: 75px; height: 75px; border-radius: 50%; object-fit: cover; border: 3px solid var(--primary-color);">
+            {% elif restaurant.get_cover_image_url %}
+                <img src="{{ restaurant.get_cover_image_url }}" alt="{{ restaurant.restaurant_name }}" style="width: 75px; height: 75px; border-radius: 50%; object-fit: cover; border: 3px solid var(--primary-color);">
+            {% endif %}
+            <div>
+                <span class="rating-badge" style="margin-bottom: 0.75rem; display: inline-block;">
+                    <i class="fa-solid fa-star"></i> {{ restaurant.rating }} Stars
+                </span>
+                <h1 style="color: white; font-size: 2.2rem; margin-bottom: 0.4rem;">{{ restaurant.restaurant_name }}</h1>
+                <p style="color: #cbd5e1; font-size: 1.05rem; margin-bottom: 0.75rem;">
+                    <i class="fa-solid fa-bowl-food" style="color: var(--secondary-color);"></i> {{ restaurant.cuisine }}
+                </p>
+                <p style="color: #a0aec0; font-size: 0.9rem;">
+                    <i class="fa-solid fa-location-dot"></i> {{ restaurant.address }}, {{ restaurant.city }} • <i class="fa-solid fa-phone"></i> {{ restaurant.phone }}
+                </p>
+            </div>
         </div>
 
         <div style="background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); padding: 1rem 1.5rem; border-radius: var(--radius-md); text-align: right;">

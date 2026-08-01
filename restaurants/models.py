@@ -85,5 +85,29 @@ class Restaurant(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True)
 
+    @property
+    def get_logo_url(self):
+        if not self.logo:
+            return None
+        img_str = str(self.logo)
+        if img_str.startswith('http://') or img_str.startswith('https://') or img_str.startswith('data:'):
+            return img_str
+        try:
+            return self.logo.url
+        except Exception:
+            return None
+
+    @property
+    def get_cover_image_url(self):
+        if not self.cover_image:
+            return None
+        img_str = str(self.cover_image)
+        if img_str.startswith('http://') or img_str.startswith('https://') or img_str.startswith('data:'):
+            return img_str
+        try:
+            return self.cover_image.url
+        except Exception:
+            return None
+
     def __str__(self):
         return self.restaurant_name
