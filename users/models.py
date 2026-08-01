@@ -48,15 +48,16 @@ class User(AbstractUser):
     def get_profile_image_url(self):
         if self.profile_image_url and self.profile_image_url.strip():
             return self.profile_image_url.strip()
-        if not self.profile_image:
-            return None
-        img_str = str(self.profile_image)
-        if img_str.startswith('http://') or img_str.startswith('https://') or img_str.startswith('data:'):
-            return img_str
-        try:
-            return self.profile_image.url
-        except Exception:
-            return None
+        if self.profile_image:
+            img_str = str(self.profile_image)
+            if img_str.startswith('http://') or img_str.startswith('https://') or img_str.startswith('data:'):
+                return img_str
+            try:
+                return self.profile_image.url
+            except Exception:
+                pass
+        name = self.first_name or self.username
+        return f"https://ui-avatars.com/api/?name={name}&background=ff385c&color=ffffff&size=128"
 
     def __str__(self):
         return self.username

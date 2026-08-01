@@ -6,11 +6,7 @@
 <div style="max-width: 700px; margin: 0 auto;" class="card">
     <div style="display: flex; align-items: center; gap: 1.5rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1.5rem; margin-bottom: 1.5rem;">
         <div style="width: 80px; height: 80px; border-radius: 50%; background: var(--primary-light); color: var(--primary-color); display: flex; align-items: center; justify-content: center; font-size: 2.5rem; font-weight: bold; overflow: hidden;">
-            {% if user.get_profile_image_url %}
-                <img src="{{ user.get_profile_image_url }}" alt="{{ user.username }}" style="width: 100%; height: 100%; object-fit: cover;">
-            {% else %}
-                {{ user.username|slice:":1"|upper }}
-            {% endif %}
+            <img src="{{ user.get_profile_image_url }}" alt="{{ user.username }}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name={{ user.first_name|default:user.username }}&background=ff385c&color=ffffff&size=128';">
         </div>
 
         <div>
